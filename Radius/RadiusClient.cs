@@ -41,8 +41,8 @@ namespace System.Net.Radius
 			RadiusPacket packet = new RadiusPacket(RadiusCode.ACCESS_REQUEST, this.sharedSecret);
 			byte[] encryptedPass = Utils.encodePapPassword(Encoding.ASCII.GetBytes(password), packet.Authenticator,
 			                                               this.sharedSecret);
-			packet.SetAttribute(new UserName(Encoding.ASCII.GetBytes(username)));
-			packet.SetAttribute(new UserPassword(encryptedPass));
+			packet.SetAttribute(new RadiusAttribute(RadiusAttributeType.USER_NAME, Encoding.ASCII.GetBytes(username)));
+			packet.SetAttribute(new RadiusAttribute(RadiusAttributeType.USER_PASSWORD, encryptedPass));
 			return packet;
 		}
 

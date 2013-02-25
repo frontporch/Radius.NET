@@ -98,7 +98,7 @@ namespace System.Net.Radius
 			set
 			{
 				_NasPortType = value;
-				_Attributes.Add(new NASPortType(BitConverter.GetBytes((int) value)));
+				_Attributes.Add(new RadiusAttribute(RadiusAttributeType.NAS_PORT_TYPE, BitConverter.GetBytes((int) value)));
 			}
 		}
 

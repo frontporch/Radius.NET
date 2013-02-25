@@ -19,21 +19,18 @@ namespace System.Net.Radius
 		public byte[] RawData { get; protected set; }
 
 		#region Constructor
-		protected RadiusAttribute(byte[] data)
+		public RadiusAttribute(RadiusAttributeType type, byte[] data)
 		{
+			Type = type;
 			_Data = data;
 
-			Length = (byte) (_Data.Length + ATTRIBUTE_HEADER_SIZE);
+			Length = (byte)(_Data.Length + ATTRIBUTE_HEADER_SIZE);
 
 			RawData = new byte[Length];
 
+			RawData[0] = (byte)Type;
 			RawData[1] = Length;
 			Array.Copy(data, 0, RawData, ATTRIBUTE_HEADER_SIZE, data.Length);
-		}
-
-		public RadiusAttribute(RadiusAttributeType type, byte[] data) : this(data)
-		{
-			Type = type;
 		}
 
 		#endregion
