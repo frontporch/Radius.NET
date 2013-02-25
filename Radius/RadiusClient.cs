@@ -1,13 +1,3 @@
-//
-// System.Net.Radius.RadiusClient.cs
-//
-// Author:
-//  Cyrille Colin (colin@univ-metz.fr)
-//
-// Copyright (C) Cyrille COLIN, 2005
-//
-
-
 using System;
 using System.IO;
 using System.Text;
@@ -83,7 +73,7 @@ namespace System.Net.Radius
 					udpClient.Send(packet.RawData, packet.RawData.Length);
 					Byte[] receiveBytes = udpClient.Receive(ref RemoteIpEndPoint);
 					RadiusPacket receivedPacket = new RadiusPacket(receiveBytes, sharedSecret, packet.Authenticator);
-					if (VerifyPacket(packet, receivedPacket))
+					if (receivedPacket.Valid && VerifyPacket(packet, receivedPacket))
 						return receivedPacket;
 					udpClient.Close();
 				}
