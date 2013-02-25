@@ -1,174 +1,170 @@
-using System;
-using System.Text;
-using System.Collections;
-using System.IO;
+using System.Collections.Generic;
 
 namespace System.Net.Radius
 {
 	public class RadiusPacket
 	{
-		//1 byte for code + 1 byte for Identifier + 2 bytes for Length + 16 bytes for Request Authenticator
-		private RadiusPacketType packetType;
-		private int identifier;
-		private long length;
-		private byte[] authenticator = new byte[16];
-		private ArrayList attributes = new ArrayList();
-		private NasPortType nasporttype;
-		//private byte[] attributesArray;
-		private byte[] rawData;
-		// used to build packetToSend
-		public RadiusPacket(RadiusPacketType packetType, string sharedsecret)
+		#region Constants
+		private const byte RADIUS_CODE_INDEX = 0;
+		private const byte RADIUS_IDENTIFIER_INDEX = 1;
+		private const byte RADIUS_LENGTH_INDEX = 2;
+		private const byte RADIUS_AUTHENTICATOR_INDEX = 4;
+		private const byte RADIUS_AUTHENTICATOR_FIELD_LENGTH = 16;
+		private const byte ATTRIBUTES_INDEX = 20;
+		private const byte HEADER_LENGTH = ATTRIBUTES_INDEX;
+		#endregion
+
+		#region Private
+		private readonly List<Attribute> _Attributes = new List<Attribute>();
+		private readonly byte[] _Authenticator = new byte[16];
+		private ushort _Length;
+		private NasPortType _NasPortType;
+		#endregion
+
+		#region Properties
+		public byte[] RawData { get; private set; }
+		public RadiusCode PacketType { get; private set; }
+		public byte Identifier { get; private set; }
+		public byte[] Header { get; private set; }
+		public bool Valid { get; private set; }
+		#endregion
+		
+		// Create a new RADIUS packet
+		public RadiusPacket(RadiusCode packetType, string sharedsecret)
 		{
-			this.packetType = packetType;
-			this.identifier = (int) (Guid.NewGuid().ToByteArray())[0];
-			this.authenticator = Utils.makeRFC2865RequestAuthenticator(sharedsecret);
+			PacketType = packetType;
+			Identifier = (Guid.NewGuid().ToByteArray())[0];
+			_Length = HEADER_LENGTH;
+			_Authenticator = Utils.makeRFC2865RequestAuthenticator(sharedsecret);
+
+			RawData = new byte[HEADER_LENGTH];
+			RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
+			RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
+			Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+			Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+			Array.Copy(_Authenticator, 0, RawData, RADIUS_AUTHENTICATOR_INDEX, RADIUS_AUTHENTICATOR_FIELD_LENGTH);
 		}
 
-		// used to format received data
+		// Parse received RADIUS packet
 		public RadiusPacket(byte[] receivedData, string sharedsecret, byte[] requestAuthenticator)
 		{
-			this.rawData = receivedData;
-			this.packetType = (RadiusPacketType) (int) receivedData[0];
-			this.identifier = (int) receivedData[1];
-			this.length = (long) (receivedData[2] << 8) + (long) receivedData[3];
-			Array.Copy(receivedData, 4, this.authenticator, 0, 16);
-			byte[] attributesArray = new byte[receivedData.Length - 20];
-			Array.Copy(receivedData, 20, attributesArray, 0, attributesArray.Length);
-			ParseAttributes(attributesArray);
-		}
-
-		public void SetAttributes(RadiusAttributeType type, byte[] data)
-		{
-			attributes.Add(new RadiusAttribute(type, data));
-		}
-
-		public NasPortType NasPortType
-		{
-			get { return this.nasporttype; }
-			set
+			try
 			{
-				this.nasporttype = value;
-				attributes.Add(new RadiusAttribute(RadiusAttributeType.NAS_PORT_TYPE, BitConverter.GetBytes((int) value)));
+				RawData = receivedData;
+
+				if (RawData.Length < 20 || RawData.Length > 4096)
+				{
+					Valid = false;
+					return;
+				}
+
+				//Get the RADIUS Code
+				PacketType = (RadiusCode)RawData[RADIUS_CODE_INDEX];
+
+				//Get the RADIUS Identifier
+				Identifier = RawData[RADIUS_IDENTIFIER_INDEX];
+
+				//Get the RADIUS Length
+				_Length = (ushort) ((RawData[2] << 8) + RawData[3]);
+
+				// RADIUS length field must be equal to or greater than packet length
+				if (_Length > RawData.Length)
+				{
+					Valid = false;
+					return;
+				}
+
+				//Get the RADIUS Authenticator
+				Array.Copy(receivedData, RADIUS_AUTHENTICATOR_INDEX, _Authenticator, 0, RADIUS_AUTHENTICATOR_FIELD_LENGTH);
+
+				//GET the RADIUS Attributes
+				byte[] attributesArray = new byte[_Length - ATTRIBUTES_INDEX];
+				Array.Copy(receivedData, ATTRIBUTES_INDEX, attributesArray, 0, attributesArray.Length);
+				ParseAttributes(attributesArray);
+
+			}
+			catch (Exception)
+			{
+				Valid = false;
 			}
 		}
 
-		public ArrayList Attributes
+
+		public NasPortType NasPortType
 		{
-			get { return this.attributes; }
+			get { return _NasPortType; }
+			set
+			{
+				_NasPortType = value;
+				_Attributes.Add(new NASPortType(BitConverter.GetBytes((int) value)));
+			}
 		}
 
-		public RadiusPacketType Type
+		public List<Attribute> Attributes
 		{
-			get { return this.packetType; }
+			get { return _Attributes; }
 		}
 
 		public byte[] Authenticator
 		{
-			get { return this.authenticator; }
+			get { return _Authenticator; }
 		}
 
-		public byte[] RawData
-		{
-			get { return this.rawData; }
+		//public void SetAttribute(Attribute attribute) The future method signature
+		public void SetAttribute(Attribute attribute)
+		{			
+			_Attributes.Add(attribute);
+
+			AppendAttribute(attribute);
 		}
 
-		public int Identifier
+		/// <summary>
+		/// Method to append an attributes bytes onto RawData
+		/// </summary>
+		/// <param name="attribute">The attribute to append</param>
+		private void AppendAttribute(Attribute attribute)
 		{
-			get { return this.identifier; }
+			//Make an array with a size of the current RawData plus the new attribute
+			byte[] newRawData = new byte[RawData.Length + attribute.Length];
+			
+			//Copy the current RawData into the temp array
+			Array.Copy(RawData, 0, newRawData, 0, RawData.Length);
+
+			//Copy the new attribute into the temp array
+			Array.Copy(attribute.RawData, 0, newRawData, RawData.Length, attribute.Length);
+
+			RawData = newRawData;
+
+			//Update the length of the RadiusPacket
+			_Length = (ushort) RawData.Length;
+			Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof (ushort));
+			Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof (ushort));
 		}
 
-		public byte[] GetBytes()
+		private void ParseAttributes(byte[] attributeByteArray)
 		{
-			this.length = 0;
-			foreach (RadiusAttribute ra in attributes) this.length += ra.GetBytes().Length;
-			byte[] attrs = new byte[this.length];
-			int offset = 0;
-			foreach (RadiusAttribute ra in attributes)
+			int currentAttributeOffset = 0;
+
+			while (currentAttributeOffset < attributeByteArray.Length)
 			{
-				Array.Copy(ra.GetBytes(), 0, attrs, offset, ra.GetBytes().Length);
-				offset += ra.GetBytes().Length;
-			}
-			byte[] header = new byte[20 + this.length];
-			header[0] = (byte) this.packetType;
-			header[1] = (byte) this.identifier;
-			header[2] = (byte) 0;
-			header[3] = System.Convert.ToByte(this.length + 20);
-			Array.Copy(this.authenticator, 0, header, 4, 16);
-			Array.Copy(attrs, 0, header, 20, attrs.Length);
-			return header;
-		}
+				//Get the RADIUS attribute type
+				RadiusAttributeType type = (RadiusAttributeType) attributeByteArray[currentAttributeOffset];
+				
+				//Get the RADIUS attribute length
+				byte length = attributeByteArray[currentAttributeOffset + 1];
 
-		private void ParseAttributes(byte[] rawattributes)
-		{
-			int x = 0;
-			while (x < rawattributes.Length)
-			{
-				RadiusAttributeType type = (RadiusAttributeType) rawattributes[x];
-				int length = (int) rawattributes[x + 1];
-				byte[] data = new byte[length - 2];
-				Array.Copy(rawattributes, x + 2, data, 0, length - 2);
-				this.attributes.Add(new RadiusAttribute(type, data));
-				x += length;
-			}
-		}
-	}
-
-	public class RadiusAttribute
-	{
-		private RadiusAttributeType type;
-		private byte[] data;
-
-		public RadiusAttribute(RadiusAttributeType type, byte[] data)
-		{
-			this.type = type;
-			this.data = data;
-		}
-
-		public RadiusAttributeType Type
-		{
-			get { return this.type; }
-		}
-
-		public byte[] GetBytes()
-		{
-			byte[] result = new byte[data.Length + 2];
-			result[0] = (byte) type;
-			result[1] = (byte) (data.Length + 2);
-			Array.Copy(data, 0, result, 2, data.Length);
-			return result;
-		}
-
-		public string Value
-		{
-			get
-			{
-				switch (type)
+				// Check minimum length and make sure the attribute doesn't run off the end of the packet
+				if (length < 2 || currentAttributeOffset + length > _Length)
 				{
-					case RadiusAttributeType.NAS_IP_ADDRESS:
-					case RadiusAttributeType.FRAMED_IP_ADDRESS:
-					case RadiusAttributeType.FRAMED_IP_NETMASK:
-					case RadiusAttributeType.LOGIN_IP_HOST:
-						return (new IPAddress((data[3] << 24) + (data[2] << 16) + (data[1] << 8) + data[0])).ToString();
-					case RadiusAttributeType.FRAMED_PROTOCOL:
-						return ((Protocol) ((data[0] << 24) + (data[1] << 16) + (data[2] << 8) + data[3])).ToString();
-					case RadiusAttributeType.FRAMED_ROUTING:
-						return ((Routing) ((data[0] << 24) + (data[1] << 16) + (data[2] << 8) + data[3])).ToString();
-					case RadiusAttributeType.SERVICE_TYPE:
-						return ((Service) ((data[0] << 24) + (data[1] << 16) + (data[2] << 8) + data[3])).ToString();
-					case RadiusAttributeType.FRAMED_COMPRESSION:
-						return ((Compression) ((data[0] << 24) + (data[1] << 16) + (data[2] << 8) + data[3])).ToString();
-					case RadiusAttributeType.LOGIN_SERVICE:
-						return ((Login) ((data[0] << 24) + (data[1] << 16) + (data[2] << 8) + data[3])).ToString();
-					case RadiusAttributeType.FILTER_ID:
-					case RadiusAttributeType.CALLBACK_NUMBER:
-					case RadiusAttributeType.REPLY_MESSAGE:
-						return System.Text.Encoding.ASCII.GetString(data);
-					case RadiusAttributeType.FRAMED_MTU:
-					case RadiusAttributeType.LOGIN_TCP_PORT:
-						return ((data[0] << 24) + (data[1] << 16) + (data[2] << 8) + data[3]).ToString();
-					default:
-						return BitConverter.ToString(data);
+					Valid = false;
+					return;
 				}
+
+				//Get the RADIUS attribute data
+				byte[] data = new byte[length - 2];
+				Array.Copy(attributeByteArray, currentAttributeOffset + 2, data, 0, length - 2);
+				_Attributes.Add(new Attribute(type, data));
+				currentAttributeOffset += length;
 			}
 		}
 	}

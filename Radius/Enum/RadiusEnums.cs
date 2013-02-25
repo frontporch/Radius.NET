@@ -1,6 +1,6 @@
 namespace System.Net.Radius
 {
-	public enum RadiusPacketType
+	public enum RadiusCode : ushort
 	{
 		ACCESS_REQUEST = 1,
 		ACCESS_ACCEPT = 2,

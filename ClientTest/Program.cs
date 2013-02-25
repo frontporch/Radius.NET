@@ -17,17 +17,17 @@ namespace ClientTest
 				return;
 			}
 			try
-			{
+			{				
 				RadiusClient rc = new RadiusClient(args[0], args[1]);
 				RadiusPacket authPacket = rc.Authenticate(args[2], args[3]);
 				RadiusPacket receivedPacket = rc.SendAndReceivePacket(authPacket);
 				if (receivedPacket == null) throw new Exception("Can't contact remote radius server !");
-				switch (receivedPacket.Type)
+				switch (receivedPacket.PacketType)
 				{
-					case RadiusPacketType.ACCESS_ACCEPT:
+					case RadiusCode.ACCESS_ACCEPT:
 						Console.WriteLine("accepted");
-						foreach (RadiusAttribute attr in receivedPacket.Attributes)
-							Console.WriteLine(attr.Type.ToString() + " = " + attr.Value);
+						foreach (var attr in receivedPacket.Attributes)
+							Console.WriteLine(attr.Type.ToString() + " = " + attr.Value());
 						break;
 					default:
 						Console.WriteLine("rejected");
@@ -38,6 +38,8 @@ namespace ClientTest
 			{
 				Console.WriteLine("Error : " + e.Message);
 			}
+
+			Console.ReadLine();
 		}
 
 		private static void ShowUsage()

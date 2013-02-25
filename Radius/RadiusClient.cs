@@ -9,6 +9,7 @@
 
 
 using System;
+using System.IO;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
@@ -47,11 +48,11 @@ namespace System.Net.Radius
 
 		public RadiusPacket Authenticate(string username, string password)
 		{
-			RadiusPacket packet = new RadiusPacket(RadiusPacketType.ACCESS_REQUEST, this.sharedSecret);
+			RadiusPacket packet = new RadiusPacket(RadiusCode.ACCESS_REQUEST, this.sharedSecret);
 			byte[] encryptedPass = Utils.encodePapPassword(Encoding.ASCII.GetBytes(password), packet.Authenticator,
 			                                               this.sharedSecret);
-			packet.SetAttributes(RadiusAttributeType.USER_NAME, Encoding.ASCII.GetBytes(username));
-			packet.SetAttributes(RadiusAttributeType.USER_PASSWORD, encryptedPass);
+			packet.SetAttribute(new UserName(Encoding.ASCII.GetBytes(username)));
+			packet.SetAttribute(new UserPassword(encryptedPass));
 			return packet;
 		}
 
@@ -78,9 +79,10 @@ namespace System.Net.Radius
 						udpClient = new RadiusUdpClient();
 						udpClient.Connect(this.hostName, this.authPort);
 					}
-					udpClient.Send(packet.GetBytes(), packet.GetBytes().Length);
+
+					udpClient.Send(packet.RawData, packet.RawData.Length);
 					Byte[] receiveBytes = udpClient.Receive(ref RemoteIpEndPoint);
-					RadiusPacket receivedPacket = new RadiusPacket(receiveBytes, this.sharedSecret, packet.Authenticator);
+					RadiusPacket receivedPacket = new RadiusPacket(receiveBytes, sharedSecret, packet.Authenticator);
 					if (VerifyPacket(packet, receivedPacket))
 						return receivedPacket;
 					udpClient.Close();
