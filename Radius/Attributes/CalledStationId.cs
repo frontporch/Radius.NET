@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class CalledStationId : Attribute
+	public class CalledStationId : RadiusAttribute
 	{
 		public CalledStationId(byte[] data) : base(data)
 		{

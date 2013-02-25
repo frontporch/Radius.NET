@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class NASIPAddress : Attribute
+	public class NASIPAddress : RadiusAttribute
 	{
 		public NASIPAddress(byte[] data) : base(data)
 		{

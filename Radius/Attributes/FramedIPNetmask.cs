@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class FramedIPNetmask : Attribute
+	public class FramedIPNetmask : RadiusAttribute
 	{
 		public FramedIPNetmask(byte[] data) : base(data)
 		{

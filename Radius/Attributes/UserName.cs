@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class UserName : Attribute
+	public class UserName : RadiusAttribute
 	{
 		public UserName(byte[] data) : base(data)
 		{

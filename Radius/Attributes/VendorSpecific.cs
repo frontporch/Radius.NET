@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class VendorSpecific : Attribute
+	public class VendorSpecific : RadiusAttribute
 	{
 		public VendorSpecific(byte[] data) : base(data)
 		{

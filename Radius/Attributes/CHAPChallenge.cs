@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class CHAPChallenge : Attribute
+	public class CHAPChallenge : RadiusAttribute
 	{
 		public CHAPChallenge(byte[] data) : base(data)
 		{

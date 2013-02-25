@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class NASIdentifier : Attribute
+	public class NASIdentifier : RadiusAttribute
 	{
 		public NASIdentifier(byte[] data) : base(data)
 		{

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class LoginLATGroup : Attribute
+	public class LoginLATGroup : RadiusAttribute
 	{
 		public LoginLATGroup(byte[] data) : base(data)
 		{

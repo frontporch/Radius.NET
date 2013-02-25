@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class LoginTCPPort : Attribute
+	public class LoginTCPPort : RadiusAttribute
 	{
 		public LoginTCPPort(byte[] data) : base(data)
 		{

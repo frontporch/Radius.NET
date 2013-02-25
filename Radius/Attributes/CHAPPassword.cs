@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class CHAPPassword : Attribute
+	public class CHAPPassword : RadiusAttribute
 	{
 		public CHAPPassword(byte[] data) : base(data)
 		{

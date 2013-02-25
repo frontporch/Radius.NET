@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class FramedProtocol : Attribute
+	public class FramedProtocol : RadiusAttribute
 	{
 		public FramedProtocol(byte[] data) : base(data)
 		{

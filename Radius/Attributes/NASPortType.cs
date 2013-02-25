@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class NASPortType : Attribute
+	public class NASPortType : RadiusAttribute
 	{
 		public NASPortType(byte[] data) : base(data)
 		{

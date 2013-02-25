@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class FramedIPAddress : Attribute
+	public class FramedIPAddress : RadiusAttribute
 	{
 		public FramedIPAddress(byte[] data) : base(data)
 		{

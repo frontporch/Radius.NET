@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class FramedMTU : Attribute
+	public class FramedMTU : RadiusAttribute
 	{
 		public FramedMTU(byte[] data) : base(data)
 		{

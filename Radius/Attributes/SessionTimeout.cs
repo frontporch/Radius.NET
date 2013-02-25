@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class SessionTimeout : Attribute
+	public class SessionTimeout : RadiusAttribute
 	{
 		public SessionTimeout(byte[] data) : base(data)
 		{

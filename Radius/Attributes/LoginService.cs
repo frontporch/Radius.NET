@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class LoginService : Attribute
+	public class LoginService : RadiusAttribute
 	{
 		public LoginService (byte[] data) : base(data)
 		{

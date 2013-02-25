@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class ProxyState : Attribute
+	public class ProxyState : RadiusAttribute
 	{
 		public ProxyState(byte[] data) : base(data)
 		{

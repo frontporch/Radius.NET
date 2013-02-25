@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class FramedCompression : Attribute
+	public class FramedCompression : RadiusAttribute
 	{
 		public FramedCompression(byte[] data) : base(data)
 		{

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class FramedRoute : Attribute
+	public class FramedRoute : RadiusAttribute
 	{
 		public FramedRoute(byte[] data) : base(data)
 		{

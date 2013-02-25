@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class FramedIPXNetwork : Attribute
+	public class FramedIPXNetwork : RadiusAttribute
 	{
 		public FramedIPXNetwork(byte[] data) : base(data)
 		{

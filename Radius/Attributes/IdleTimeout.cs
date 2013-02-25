@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class IdleTimeout : Attribute
+	public class IdleTimeout : RadiusAttribute
 	{
 		public IdleTimeout(byte[] data) : base(data)
 		{

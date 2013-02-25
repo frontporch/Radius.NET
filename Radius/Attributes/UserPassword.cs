@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class UserPassword : Attribute
+	public class UserPassword : RadiusAttribute
 	{
 		public UserPassword(byte[] data) : base(data)
 		{

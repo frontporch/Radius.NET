@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class PortLimit : Attribute
+	public class PortLimit : RadiusAttribute
 	{
 		public PortLimit(byte[] data) : base(data)
 		{

@@ -15,7 +15,7 @@ namespace System.Net.Radius
 		#endregion
 
 		#region Private
-		private readonly List<Attribute> _Attributes = new List<Attribute>();
+		private readonly List<RadiusAttribute> _Attributes = new List<RadiusAttribute>();
 		private readonly byte[] _Authenticator = new byte[16];
 		private ushort _Length;
 		private NasPortType _NasPortType;
@@ -50,6 +50,8 @@ namespace System.Net.Radius
 		{
 			try
 			{
+				Valid = true;
+				
 				RawData = receivedData;
 
 				if (RawData.Length < 20 || RawData.Length > 4096)
@@ -100,7 +102,7 @@ namespace System.Net.Radius
 			}
 		}
 
-		public List<Attribute> Attributes
+		public List<RadiusAttribute> Attributes
 		{
 			get { return _Attributes; }
 		}
@@ -111,7 +113,7 @@ namespace System.Net.Radius
 		}
 
 		//public void SetAttribute(Attribute attribute) The future method signature
-		public void SetAttribute(Attribute attribute)
+		public void SetAttribute(RadiusAttribute attribute)
 		{			
 			_Attributes.Add(attribute);
 
@@ -122,7 +124,7 @@ namespace System.Net.Radius
 		/// Method to append an attributes bytes onto RawData
 		/// </summary>
 		/// <param name="attribute">The attribute to append</param>
-		private void AppendAttribute(Attribute attribute)
+		private void AppendAttribute(RadiusAttribute attribute)
 		{
 			//Make an array with a size of the current RawData plus the new attribute
 			byte[] newRawData = new byte[RawData.Length + attribute.Length];
@@ -163,7 +165,7 @@ namespace System.Net.Radius
 				//Get the RADIUS attribute data
 				byte[] data = new byte[length - 2];
 				Array.Copy(attributeByteArray, currentAttributeOffset + 2, data, 0, length - 2);
-				_Attributes.Add(new Attribute(type, data));
+				_Attributes.Add(new RadiusAttribute(type, data));
 				currentAttributeOffset += length;
 			}
 		}

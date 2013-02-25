@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\Attribute.cs">
+    <Compile Include="Attributes\RadiusAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Attributes\CallbackId.cs" />

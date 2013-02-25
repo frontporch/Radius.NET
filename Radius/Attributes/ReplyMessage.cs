@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class ReplyMessage : Attribute
+	public class ReplyMessage : RadiusAttribute
 	{
 		public ReplyMessage(byte[] data) : base(data)
 		{

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class TerminationAction : Attribute
+	public class TerminationAction : RadiusAttribute
 	{
 		public TerminationAction(byte[] data) : base(data)
 		{

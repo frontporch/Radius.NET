@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Net.Radius
 {
-	public class FramedAppleTalkZone : Attribute
+	public class FramedAppleTalkZone : RadiusAttribute
 	{
 		public FramedAppleTalkZone(byte[] data) : base(data)
 		{

@@ -11,15 +11,23 @@ namespace ClientTest
 	{
 		private static void Main(string[] args)
 		{
-			if (args.Length != 4)
-			{
-				ShowUsage();
-				return;
-			}
+			//if (args.Length != 4)
+			//{
+			//	ShowUsage();
+			//	return;
+			//}
+
 			try
-			{				
-				RadiusClient rc = new RadiusClient(args[0], args[1]);
-				RadiusPacket authPacket = rc.Authenticate(args[2], args[3]);
+			{
+				string hostname = "PORCHLIGHT";
+				string sharedKey = "test";
+				string username = "Shane";
+				string password = "Test";
+				
+				//RadiusClient rc = new RadiusClient(args[0], args[1]);
+				//RadiusPacket authPacket = rc.Authenticate(args[2], args[3]);
+				RadiusClient rc = new RadiusClient(hostname, sharedKey);
+				RadiusPacket authPacket = rc.Authenticate(username, password);
 				RadiusPacket receivedPacket = rc.SendAndReceivePacket(authPacket);
 				if (receivedPacket == null) throw new Exception("Can't contact remote radius server !");
 				switch (receivedPacket.PacketType)
@@ -27,7 +35,7 @@ namespace ClientTest
 					case RadiusCode.ACCESS_ACCEPT:
 						Console.WriteLine("accepted");
 						foreach (var attr in receivedPacket.Attributes)
-							Console.WriteLine(attr.Type.ToString() + " = " + attr.Value());
+							Console.WriteLine(attr.Type.ToString() + " = " + attr.Value);
 						break;
 					default:
 						Console.WriteLine("rejected");
@@ -44,7 +52,7 @@ namespace ClientTest
 
 		private static void ShowUsage()
 		{
-			Console.WriteLine("Usage : mono radiusauth.exe hostname sharedsecret username password");
+			Console.WriteLine("Usage : ClientTest.exe hostname sharedsecret username password");
 		}
 	}
 }
