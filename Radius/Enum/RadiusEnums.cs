@@ -1,4 +1,4 @@
-namespace System.Net.Radius
+namespace FP.Radius
 {
 	public enum RadiusCode : ushort
 	{

@@ -1,6 +1,7 @@
+using System;
 using System.Collections.Generic;
 
-namespace System.Net.Radius
+namespace FP.Radius
 {
 	public class RadiusPacket
 	{
@@ -35,7 +36,7 @@ namespace System.Net.Radius
 			PacketType = packetType;
 			Identifier = (Guid.NewGuid().ToByteArray())[0];
 			_Length = HEADER_LENGTH;
-			_Authenticator = Utils.makeRFC2865RequestAuthenticator(sharedsecret);
+			_Authenticator = Utils.RequestAuthenticator(sharedsecret);
 
 			RawData = new byte[HEADER_LENGTH];
 			RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
@@ -85,12 +86,11 @@ namespace System.Net.Radius
 				ParseAttributes(attributesArray);
 
 			}
-			catch (Exception)
+			catch
 			{
 				Valid = false;
 			}
 		}
-
 
 		public NasPortType NasPortType
 		{
@@ -112,23 +112,13 @@ namespace System.Net.Radius
 			get { return _Authenticator; }
 		}
 
-		//public void SetAttribute(Attribute attribute) The future method signature
 		public void SetAttribute(RadiusAttribute attribute)
 		{			
 			_Attributes.Add(attribute);
 
-			AppendAttribute(attribute);
-		}
-
-		/// <summary>
-		/// Method to append an attributes bytes onto RawData
-		/// </summary>
-		/// <param name="attribute">The attribute to append</param>
-		private void AppendAttribute(RadiusAttribute attribute)
-		{
 			//Make an array with a size of the current RawData plus the new attribute
 			byte[] newRawData = new byte[RawData.Length + attribute.Length];
-			
+
 			//Copy the current RawData into the temp array
 			Array.Copy(RawData, 0, newRawData, 0, RawData.Length);
 
@@ -138,9 +128,9 @@ namespace System.Net.Radius
 			RawData = newRawData;
 
 			//Update the length of the RadiusPacket
-			_Length = (ushort) RawData.Length;
-			Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof (ushort));
-			Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof (ushort));
+			_Length = (ushort)RawData.Length;
+			Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+			Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
 		}
 
 		private void ParseAttributes(byte[] attributeByteArray)

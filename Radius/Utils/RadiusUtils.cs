@@ -1,11 +1,11 @@
 using System;
 using System.Security.Cryptography;
 
-namespace System.Net.Radius
+namespace FP.Radius
 {
 	internal class Utils
 	{
-		public static byte[] makeRFC2865RequestAuthenticator(string sharedSecret)
+		public static byte[] RequestAuthenticator(string sharedSecret)
 		{
 			byte[] sharedS = System.Text.Encoding.ASCII.GetBytes(sharedSecret);
 			byte[] requestAuthenticator = new byte[16 + sharedS.Length];
@@ -18,9 +18,9 @@ namespace System.Net.Radius
 			return md5.Hash;
 		}
 
-		public static byte[] makeRFC2865ResponseAuthenticator(byte[] data, byte[] requestAuthenticator, string sharedSecret)
+		public static byte[] ResponseAuthenticator(byte[] data, byte[] requestAuthenticator, string sharedSecret)
 		{
-			System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+			MD5 md5 = new MD5CryptoServiceProvider();
 			byte[] ssArray = System.Text.Encoding.ASCII.GetBytes(sharedSecret);
 			byte[] sum = new byte[data.Length + ssArray.Length];
 			Array.Copy(data, 0, sum, 0, data.Length);
@@ -30,23 +30,26 @@ namespace System.Net.Radius
 			return md5.Hash;
 		}
 
-		public static byte[] encodePapPassword(byte[] userPassBytes, byte[] requestAuthenticator, string sharedSecret)
+		public static byte[] EncodePapPassword(byte[] userPassBytes, byte[] requestAuthenticator, string sharedSecret)
 		{
 			if (userPassBytes.Length > 128)
 				throw new InvalidOperationException("the PAP password cannot be greater than 128 bytes...");
 
-			byte[] encryptedPass = null;
-			if (userPassBytes.Length%16 == 0) encryptedPass = new byte[userPassBytes.Length];
-			else encryptedPass = new byte[((userPassBytes.Length/16)*16) + 16];
-			System.Array.Copy(userPassBytes, 0, encryptedPass, 0, userPassBytes.Length);
-			for (int i = userPassBytes.Length; i < encryptedPass.Length; i++) encryptedPass[i] = 0;
+			byte[] encryptedPass = userPassBytes.Length%16 == 0 
+				? new byte[userPassBytes.Length] 
+				: new byte[((userPassBytes.Length/16)*16) + 16];
+
+			Array.Copy(userPassBytes, 0, encryptedPass, 0, userPassBytes.Length);
+
+			for (int i = userPassBytes.Length; i < encryptedPass.Length; i++) 
+				encryptedPass[i] = 0;
 
 			byte[] sharedSecretBytes = System.Text.Encoding.ASCII.GetBytes(sharedSecret);
 
-			System.Security.Cryptography.MD5 md5;
 			for (int chunk = 0; chunk < (encryptedPass.Length/16); chunk++)
 			{
-				md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+				MD5 md5 = new MD5CryptoServiceProvider();
+
 				md5.TransformBlock(sharedSecretBytes, 0, sharedSecretBytes.Length, sharedSecretBytes, 0);
 				if (chunk == 0)
 					md5.TransformFinalBlock(requestAuthenticator, 0, requestAuthenticator.Length);
@@ -64,5 +67,6 @@ namespace System.Net.Radius
 
 			return encryptedPass;
 		}
+
 	}
 }

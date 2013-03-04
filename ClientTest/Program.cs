@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Radius;
+using FP.Radius;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,24 +11,18 @@ namespace ClientTest
 	{
 		private static void Main(string[] args)
 		{
-			//if (args.Length != 4)
-			//{
-			//	ShowUsage();
-			//	return;
-			//}
+			if (args.Length != 4)
+			{
+				ShowUsage();
+				return;
+			}
 
 			try
 			{
-				string hostname = "PORCHLIGHT";
-				string sharedKey = "test";
-				string username = "Shane";
-				string password = "Test";
+				RadiusClient rc = new RadiusClient(args[0], args[1]);
+				RadiusPacket authPacket = rc.Authenticate(args[2], args[3]);
 				
-				//RadiusClient rc = new RadiusClient(args[0], args[1]);
-				//RadiusPacket authPacket = rc.Authenticate(args[2], args[3]);
-				RadiusClient rc = new RadiusClient(hostname, sharedKey);
-				RadiusPacket authPacket = rc.Authenticate(username, password);
-				RadiusPacket receivedPacket = rc.SendAndReceivePacket(authPacket);
+				RadiusPacket receivedPacket = rc.SendAndReceivePacket(authPacket).Result;
 				if (receivedPacket == null) throw new Exception("Can't contact remote radius server !");
 				switch (receivedPacket.PacketType)
 				{
