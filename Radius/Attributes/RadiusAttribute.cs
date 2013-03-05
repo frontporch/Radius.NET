@@ -40,8 +40,6 @@ namespace FP.Radius
 		{
 			get
 			{
-				Array.Reverse(_Data);
-
 				switch (Type)
 				{
 					case RadiusAttributeType.NAS_IP_ADDRESS:
@@ -50,14 +48,19 @@ namespace FP.Radius
 					case RadiusAttributeType.LOGIN_IP_HOST:
 						return new IPAddress(_Data).ToString();
 					case RadiusAttributeType.FRAMED_PROTOCOL:
+						Array.Reverse(_Data);
 						return ((Protocol)(BitConverter.ToInt32(_Data, 0))).ToString();
 					case RadiusAttributeType.FRAMED_ROUTING:
+						Array.Reverse(_Data);
 						return ((Routing)(BitConverter.ToInt32(_Data, 0))).ToString();
 					case RadiusAttributeType.SERVICE_TYPE:
+						Array.Reverse(_Data);
 						return ((Service)(BitConverter.ToInt32(_Data, 0))).ToString();
 					case RadiusAttributeType.FRAMED_COMPRESSION:
+						Array.Reverse(_Data);
 						return ((Compression)(BitConverter.ToInt32(_Data, 0))).ToString();
 					case RadiusAttributeType.LOGIN_SERVICE:
+						Array.Reverse(_Data);
 						return ((Login)(BitConverter.ToInt32(_Data, 0))).ToString();
 					case RadiusAttributeType.FILTER_ID:
 					case RadiusAttributeType.CALLBACK_NUMBER:
@@ -65,6 +68,7 @@ namespace FP.Radius
 						return Encoding.UTF8.GetString(_Data);
 					case RadiusAttributeType.FRAMED_MTU:
 					case RadiusAttributeType.LOGIN_TCP_PORT:
+						Array.Reverse(_Data);
 						return (BitConverter.ToInt32(_Data, 0)).ToString();
 					default:
 						return BitConverter.ToString(_Data);

@@ -83,8 +83,6 @@ namespace FP.Radius
 			return null;
 		}
 
-
-
 		private bool VerifyPacket(RadiusPacket requestedPacket, RadiusPacket receivedPacket)
 		{
 			if (requestedPacket.Identifier != receivedPacket.Identifier) return false;
