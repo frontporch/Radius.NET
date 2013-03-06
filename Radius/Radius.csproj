@@ -43,6 +43,7 @@
     <Compile Include="Attributes\RadiusAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Attributes\VendorSpecificAttribute.cs" />
     <Compile Include="Enum\RadiusEnums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RadiusClient.cs" />

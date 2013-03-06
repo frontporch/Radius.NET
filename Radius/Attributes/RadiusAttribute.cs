@@ -10,16 +10,22 @@ namespace FP.Radius
 	public class RadiusAttribute
 	{
 		#region Constants
-		private const byte ATTRIBUTE_HEADER_SIZE = 2;
+		protected const byte ATTRIBUTE_HEADER_SIZE = 2;
 		#endregion
 
 		protected byte[] _Data;
 
 		public RadiusAttributeType Type { get; protected set; }
-		public byte Length { get; private set; }
+		public byte Length { get; protected set; }
 		public byte[] RawData { get; protected set; }
 
 		#region Constructor
+
+		public RadiusAttribute(RadiusAttributeType type)
+		{
+			Type = type;
+		}
+
 		public RadiusAttribute(RadiusAttributeType type, byte[] data)
 		{
 			Type = type;
