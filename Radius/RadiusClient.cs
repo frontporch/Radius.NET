@@ -14,7 +14,7 @@ namespace FP.Radius
 		private const int DEFAULT_RETRIES = 3;
 		private static uint DEFAULT_AUTH_PORT = 1812;
 		private static uint DEFAULT_ACCT_PORT = 1813;
-		private static int DEFAULT_SOCKET_TIMEOUT = 3;
+		private static int DEFAULT_SOCKET_TIMEOUT = 3000;
 
 		private string _SharedSecret = String.Empty;
 		private string _HostName = String.Empty;
@@ -56,41 +56,37 @@ namespace FP.Radius
 
 		public async Task<RadiusPacket> SendAndReceivePacket(RadiusPacket packet, int retries = DEFAULT_RETRIES)
 		{
-			UdpClient udpClient = new UdpClient();
-
-			udpClient.Connect(_HostName, (int)_AuthPort);
-
-			for (int i = 0; i <= retries; i++)
+			using (UdpClient udpClient = new UdpClient())
 			{
-				if (!udpClient.Client.Connected)
-				{
-					udpClient.Connect(_HostName, (int)_AuthPort);
-				}
+				udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, _SocketTimeout);
 				
-				await udpClient.SendAsync(packet.RawData, packet.RawData.Length);
+				udpClient.Connect(_HostName, (int) _AuthPort);
 
-				try
-				{
-					var result = await udpClient.ReceiveAsync().WithTimeout(TimeSpan.FromSeconds(_SocketTimeout), _HostName);
-					RadiusPacket receivedPacket = new RadiusPacket(result.Buffer);
+				var endPoint = (IPEndPoint)udpClient.Client.RemoteEndPoint;
 
-					if (receivedPacket.Valid && VerifyPacket(packet, receivedPacket))
-						return receivedPacket;
-				}
-				catch (Exception e)
+				for (int i = 0; i < retries; i++)
 				{
-					if(udpClient.Client.Connected)
-						udpClient.Close();
+					await udpClient.SendAsync(packet.RawData, packet.RawData.Length);
+
+					try
+					{
+						var result = udpClient.Receive(ref endPoint);
+						RadiusPacket receivedPacket = new RadiusPacket(result);
+
+						if (receivedPacket.Valid && VerifyAuthenticator(packet, receivedPacket))
+							return receivedPacket;
+					}
+					catch (SocketException e)
+					{
+						//Server isn't responding
+					}
 				}
 			}
 
-			if (udpClient.Client.Connected)
-				udpClient.Close();
-			
 			return null;
 		}
 
-		private bool VerifyPacket(RadiusPacket requestedPacket, RadiusPacket receivedPacket)
+		private bool VerifyAuthenticator(RadiusPacket requestedPacket, RadiusPacket receivedPacket)
 		{
 			return requestedPacket.Identifier == receivedPacket.Identifier 
 				&& receivedPacket.Authenticator.SequenceEqual(Utils.ResponseAuthenticator(receivedPacket.RawData, requestedPacket.Authenticator, _SharedSecret));
