@@ -29,7 +29,7 @@ Example Usage
 	switch (receivedPacket.PacketType)
 	{
 		case RadiusCode.ACCESS_ACCEPT:
-			Console.WriteLine("accepted");
+			Console.WriteLine("Accepted");
 			foreach (var attr in receivedPacket.Attributes)
 				Console.WriteLine(attr.Type.ToString() + " = " + attr.Value);
 			break;
