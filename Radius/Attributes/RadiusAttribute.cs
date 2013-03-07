@@ -13,35 +13,14 @@ namespace FP.Radius
 		protected const byte ATTRIBUTE_HEADER_SIZE = 2;
 		#endregion
 
+		#region Protected
 		protected byte[] _Data;
+		#endregion
 
+		#region Properties
 		public RadiusAttributeType Type { get; protected set; }
 		public byte Length { get; protected set; }
 		public byte[] RawData { get; protected set; }
-
-		#region Constructor
-
-		public RadiusAttribute(RadiusAttributeType type)
-		{
-			Type = type;
-		}
-
-		public RadiusAttribute(RadiusAttributeType type, byte[] data)
-		{
-			Type = type;
-			_Data = data;
-
-			Length = (byte)(_Data.Length + ATTRIBUTE_HEADER_SIZE);
-
-			RawData = new byte[Length];
-
-			RawData[0] = (byte)Type;
-			RawData[1] = Length;
-			Array.Copy(data, 0, RawData, ATTRIBUTE_HEADER_SIZE, data.Length);
-		}
-
-		#endregion
-
 		public string Value
 		{
 			get
@@ -81,5 +60,30 @@ namespace FP.Radius
 				}
 			}
 		}
+		#endregion
+
+		#region Constructor
+
+		public RadiusAttribute(RadiusAttributeType type)
+		{
+			Type = type;
+		}
+
+		public RadiusAttribute(RadiusAttributeType type, byte[] data)
+		{
+			Type = type;
+			_Data = data;
+
+			Length = (byte)(_Data.Length + ATTRIBUTE_HEADER_SIZE);
+
+			RawData = new byte[Length];
+
+			RawData[0] = (byte)Type;
+			RawData[1] = Length;
+			Array.Copy(data, 0, RawData, ATTRIBUTE_HEADER_SIZE, data.Length);
+		}
+
+		#endregion
+
 	}
 }

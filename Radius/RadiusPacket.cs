@@ -29,8 +29,29 @@ namespace FP.Radius
 		public byte Identifier { get; private set; }
 		public byte[] Header { get; private set; }
 		public bool Valid { get; private set; }
-		#endregion
 		
+		public NasPortType NasPortType
+		{
+			get { return _NasPortType; }
+			set
+			{
+				_NasPortType = value;
+				_Attributes.Add(new RadiusAttribute(RadiusAttributeType.NAS_PORT_TYPE, BitConverter.GetBytes((int) value)));
+			}
+		}
+
+		public List<RadiusAttribute> Attributes
+		{
+			get { return _Attributes; }
+		}
+
+		public byte[] Authenticator
+		{
+			get { return _Authenticator; }
+		}
+		#endregion
+
+		#region Constructors
 		// Create a new RADIUS packet
 		public RadiusPacket(RadiusCode packetType, string sharedsecret)
 		{
@@ -92,26 +113,7 @@ namespace FP.Radius
 				Valid = false;
 			}
 		}
-
-		public NasPortType NasPortType
-		{
-			get { return _NasPortType; }
-			set
-			{
-				_NasPortType = value;
-				_Attributes.Add(new RadiusAttribute(RadiusAttributeType.NAS_PORT_TYPE, BitConverter.GetBytes((int) value)));
-			}
-		}
-
-		public List<RadiusAttribute> Attributes
-		{
-			get { return _Attributes; }
-		}
-
-		public byte[] Authenticator
-		{
-			get { return _Authenticator; }
-		}
+		#endregion
 
 		public void SetAttribute(RadiusAttribute attribute)
 		{			

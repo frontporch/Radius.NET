@@ -67,6 +67,5 @@ namespace FP.Radius
 
 			return encryptedPass;
 		}
-
 	}
 }
