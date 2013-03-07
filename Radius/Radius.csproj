@@ -49,7 +49,6 @@
     <Compile Include="RadiusClient.cs" />
     <Compile Include="RadiusPacket.cs" />
     <Compile Include="Utils\RadiusUtils.cs" />
-    <Compile Include="Utils\TaskExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
