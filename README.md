@@ -12,7 +12,7 @@ Requirements
 Example Usage
 =============
 
-```c#
+```csharp
 string hostname = "UBUNTU-RADIUS";
 string sharedKey = "test";
 string username = "User1";
