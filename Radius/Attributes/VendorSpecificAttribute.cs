@@ -14,8 +14,10 @@ namespace FP.Radius
 		private const byte VSA_DATA_INDEX = 8;
 		#endregion
 
+		#region Properties
 		public byte VendorSpecificType { get; private set; }
 		public byte VendorSpecificLength { get; private set; }
+		#endregion
 
 		#region Constructor
 		public VendorSpecificAttribute(uint vendorId, byte vendorSpecificType, byte[] vendorSpecificData) : base (RadiusAttributeType.VENDOR_SPECIFIC)
@@ -42,7 +44,6 @@ namespace FP.Radius
 
 			Array.Copy(vendorSpecificData, 0, RawData, VSA_DATA_INDEX, vendorSpecificData.Length);
 		}
-
 		#endregion
 	}
 }

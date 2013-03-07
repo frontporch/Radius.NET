@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace FP.Radius
 {
@@ -12,12 +13,12 @@ namespace FP.Radius
 		private const byte RADIUS_AUTHENTICATOR_INDEX = 4;
 		private const byte RADIUS_AUTHENTICATOR_FIELD_LENGTH = 16;
 		private const byte ATTRIBUTES_INDEX = 20;
-		private const byte HEADER_LENGTH = ATTRIBUTES_INDEX;
+		private const byte RADIUS_HEADER_LENGTH = ATTRIBUTES_INDEX;
 		#endregion
 
 		#region Private
 		private readonly List<RadiusAttribute> _Attributes = new List<RadiusAttribute>();
-		private readonly byte[] _Authenticator = new byte[16];
+		private readonly byte[] _Authenticator = new byte[RADIUS_AUTHENTICATOR_FIELD_LENGTH];
 		private ushort _Length;
 		private NasPortType _NasPortType;
 		#endregion
@@ -35,10 +36,10 @@ namespace FP.Radius
 		{
 			PacketType = packetType;
 			Identifier = (Guid.NewGuid().ToByteArray())[0];
-			_Length = HEADER_LENGTH;
+			_Length = RADIUS_HEADER_LENGTH;
 			_Authenticator = Utils.RequestAuthenticator(sharedsecret);
 
-			RawData = new byte[HEADER_LENGTH];
+			RawData = new byte[RADIUS_HEADER_LENGTH];
 			RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
 			RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
 			Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
@@ -47,12 +48,12 @@ namespace FP.Radius
 		}
 
 		// Parse received RADIUS packet
-		public RadiusPacket(byte[] receivedData, string sharedsecret, byte[] requestAuthenticator)
+		public RadiusPacket(byte[] receivedData)
 		{
 			try
 			{
 				Valid = true;
-				
+
 				RawData = receivedData;
 
 				if (RawData.Length < 20 || RawData.Length > 4096)
@@ -68,7 +69,7 @@ namespace FP.Radius
 				Identifier = RawData[RADIUS_IDENTIFIER_INDEX];
 
 				//Get the RADIUS Length
-				_Length = (ushort) ((RawData[2] << 8) + RawData[3]);
+				_Length = (ushort)((RawData[2] << 8) + RawData[3]);
 
 				// RADIUS length field must be equal to or greater than packet length
 				if (_Length > RawData.Length)
@@ -78,7 +79,7 @@ namespace FP.Radius
 				}
 
 				//Get the RADIUS Authenticator
-				Array.Copy(receivedData, RADIUS_AUTHENTICATOR_INDEX, _Authenticator, 0, RADIUS_AUTHENTICATOR_FIELD_LENGTH);
+				Array.Copy(RawData, RADIUS_AUTHENTICATOR_INDEX, _Authenticator, 0, RADIUS_AUTHENTICATOR_FIELD_LENGTH);
 
 				//GET the RADIUS Attributes
 				byte[] attributesArray = new byte[_Length - ATTRIBUTES_INDEX];

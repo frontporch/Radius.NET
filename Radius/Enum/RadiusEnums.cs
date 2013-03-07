@@ -1,6 +1,6 @@
 namespace FP.Radius
 {
-	public enum RadiusCode : ushort
+	public enum RadiusCode : byte
 	{
 		ACCESS_REQUEST = 1,
 		ACCESS_ACCEPT = 2,
