@@ -14,7 +14,7 @@ namespace FP.Radius
 		#endregion
 
 		#region Protected
-		protected byte[] _Data;
+		public byte[] Data;
 		#endregion
 
 		#region Properties
@@ -31,32 +31,32 @@ namespace FP.Radius
 					case RadiusAttributeType.FRAMED_IP_ADDRESS:
 					case RadiusAttributeType.FRAMED_IP_NETMASK:
 					case RadiusAttributeType.LOGIN_IP_HOST:
-						return new IPAddress(_Data).ToString();
+						return new IPAddress(Data).ToString();
 					case RadiusAttributeType.FRAMED_PROTOCOL:
-						Array.Reverse(_Data);
-						return ((Protocol)(BitConverter.ToInt32(_Data, 0))).ToString();
+						Array.Reverse(Data);
+						return ((Protocol)(BitConverter.ToInt32(Data, 0))).ToString();
 					case RadiusAttributeType.FRAMED_ROUTING:
-						Array.Reverse(_Data);
-						return ((Routing)(BitConverter.ToInt32(_Data, 0))).ToString();
+						Array.Reverse(Data);
+						return ((Routing)(BitConverter.ToInt32(Data, 0))).ToString();
 					case RadiusAttributeType.SERVICE_TYPE:
-						Array.Reverse(_Data);
-						return ((Service)(BitConverter.ToInt32(_Data, 0))).ToString();
+						Array.Reverse(Data);
+						return ((Service)(BitConverter.ToInt32(Data, 0))).ToString();
 					case RadiusAttributeType.FRAMED_COMPRESSION:
-						Array.Reverse(_Data);
-						return ((Compression)(BitConverter.ToInt32(_Data, 0))).ToString();
+						Array.Reverse(Data);
+						return ((Compression)(BitConverter.ToInt32(Data, 0))).ToString();
 					case RadiusAttributeType.LOGIN_SERVICE:
-						Array.Reverse(_Data);
-						return ((Login)(BitConverter.ToInt32(_Data, 0))).ToString();
+						Array.Reverse(Data);
+						return ((Login)(BitConverter.ToInt32(Data, 0))).ToString();
 					case RadiusAttributeType.FILTER_ID:
 					case RadiusAttributeType.CALLBACK_NUMBER:
 					case RadiusAttributeType.REPLY_MESSAGE:
-						return Encoding.UTF8.GetString(_Data);
+						return Encoding.UTF8.GetString(Data);
 					case RadiusAttributeType.FRAMED_MTU:
 					case RadiusAttributeType.LOGIN_TCP_PORT:
-						Array.Reverse(_Data);
-						return (BitConverter.ToInt32(_Data, 0)).ToString();
+						Array.Reverse(Data);
+						return (BitConverter.ToInt32(Data, 0)).ToString();
 					default:
-						return BitConverter.ToString(_Data);
+						return BitConverter.ToString(Data);
 				}
 			}
 		}
@@ -72,9 +72,9 @@ namespace FP.Radius
 		public RadiusAttribute(RadiusAttributeType type, byte[] data)
 		{
 			Type = type;
-			_Data = data;
+			Data = data;
 
-			Length = (byte)(_Data.Length + ATTRIBUTE_HEADER_SIZE);
+			Length = (byte)(Data.Length + ATTRIBUTE_HEADER_SIZE);
 
 			RawData = new byte[Length];
 

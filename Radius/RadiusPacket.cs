@@ -158,7 +158,11 @@ namespace FP.Radius
 				//Get the RADIUS attribute data
 				byte[] data = new byte[length - 2];
 				Array.Copy(attributeByteArray, currentAttributeOffset + 2, data, 0, length - 2);
-				_Attributes.Add(new RadiusAttribute(type, data));
+
+				_Attributes.Add(type == RadiusAttributeType.VENDOR_SPECIFIC
+					                ? new VendorSpecificAttribute(attributeByteArray)
+					                : new RadiusAttribute(type, data));
+
 				currentAttributeOffset += length;
 			}
 		}
