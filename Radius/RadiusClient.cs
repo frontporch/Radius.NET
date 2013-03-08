@@ -37,13 +37,7 @@ namespace FP.Radius
 		#endregion
 
 		#region Constructors
-		public RadiusClient(string hostName, string sharedSecret) :
-			this(hostName, DEFAULT_AUTH_PORT, DEFAULT_ACCT_PORT, sharedSecret, DEFAULT_SOCKET_TIMEOUT) {}
-
-		public RadiusClient(string hostName, uint authPort, uint acctPort, string sharedSecret) :
-			this(hostName, authPort, acctPort, sharedSecret, DEFAULT_SOCKET_TIMEOUT) {}
-
-		public RadiusClient(string hostName, uint authPort, uint acctPort, string sharedSecret, int sockTimeout)
+		public RadiusClient(string hostName, string sharedSecret, int sockTimeout = DEFAULT_SOCKET_TIMEOUT, uint authPort = DEFAULT_AUTH_PORT, uint acctPort = DEFAULT_ACCT_PORT)
 		{
 			_HostName = hostName;
 			_AuthPort = authPort;
