@@ -67,7 +67,9 @@ namespace FP.Radius
 
 				var endPoint = (IPEndPoint)udpClient.Client.RemoteEndPoint;
 
-				for (int i = 0; i < retries; i++)
+				int numberOfAttempts = 0;
+
+				do
 				{
 					await udpClient.SendAsync(packet.RawData, packet.RawData.Length);
 
@@ -84,7 +86,10 @@ namespace FP.Radius
 					{
 						//Server isn't responding
 					}
-				}
+
+					numberOfAttempts++;
+
+				} while (numberOfAttempts < retries);
 			}
 
 			return null;
