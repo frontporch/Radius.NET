@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
@@ -62,8 +63,20 @@ namespace FP.Radius
 			using (UdpClient udpClient = new UdpClient())
 			{
 				udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, _SocketTimeout);
-				
-				udpClient.Connect(_HostName, (int) _AuthPort);
+
+				try
+				{
+					udpClient.Connect(_HostName, (int) _AuthPort);
+				}
+				catch (SocketException e)
+				{
+					int hr = Marshal.GetHRForException(e);
+					string hexValue = hr.ToString("X");
+
+					//The requested name is valid, but no data of the requested type was found
+					if (hexValue == "80004005")
+						return null;
+				}
 
 				var endPoint = (IPEndPoint)udpClient.Client.RemoteEndPoint;
 
