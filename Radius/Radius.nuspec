@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/frontporch/Radius.NET</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Initial release.</releaseNotes>
+    <releaseNotes>Fixed an issue with UdpClient not able to conenct.</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>Radius .NET</tags>
   </metadata>
