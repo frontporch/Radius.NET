@@ -66,7 +66,13 @@ namespace FP.Radius
 
 				try
 				{
-					udpClient.Connect(_HostName, (int) _AuthPort);
+					IPAddress hostIP;
+
+					if (IPAddress.TryParse(_HostName, out hostIP))
+						udpClient.Connect(hostIP, (int) _AuthPort);
+					else
+						udpClient.Connect(_HostName, (int) _AuthPort);
+					
 				}
 				catch (SocketException e)
 				{
