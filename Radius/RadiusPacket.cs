@@ -160,7 +160,7 @@ namespace FP.Radius
 				Array.Copy(attributeByteArray, currentAttributeOffset + 2, data, 0, length - 2);
 
 				_Attributes.Add(type == RadiusAttributeType.VENDOR_SPECIFIC
-					                ? new VendorSpecificAttribute(attributeByteArray)
+					                ? new VendorSpecificAttribute(attributeByteArray, currentAttributeOffset)
 					                : new RadiusAttribute(type, data));
 
 				currentAttributeOffset += length;

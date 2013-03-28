@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/frontporch/Radius.NET</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Allow IPAddress to be used as the hostname</releaseNotes>
+    <releaseNotes>Fixed an issue with attribute offsets</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>Radius .NET</tags>
   </metadata>
