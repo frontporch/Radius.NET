@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
@@ -120,6 +121,25 @@ namespace FP.Radius
 		{
 			return requestedPacket.Identifier == receivedPacket.Identifier 
 				&& receivedPacket.Authenticator.SequenceEqual(Utils.ResponseAuthenticator(receivedPacket.RawData, requestedPacket.Authenticator, _SharedSecret));
+		}
+
+		public bool VerifyAccountingAuthenticator(byte[] radiusPacket, string secret)
+		{
+			var secretBytes = Encoding.ASCII.GetBytes(secret);
+
+			byte[] sum = new byte[radiusPacket.Length + secretBytes.Length];
+
+			byte[] authenticator = new byte[16];
+			Array.Copy(radiusPacket, 4, authenticator, 0, 16);
+
+			Array.Copy(radiusPacket, 0, sum, 0, radiusPacket.Length);
+			Array.Copy(secretBytes, 0, sum, radiusPacket.Length, secretBytes.Length);
+			Array.Clear(sum, 4, 16);
+
+			MD5 md5 = new MD5CryptoServiceProvider();
+
+			var hash = md5.ComputeHash(sum, 0, sum.Length);
+			return authenticator.SequenceEqual(hash);
 		}
 		#endregion
 	}

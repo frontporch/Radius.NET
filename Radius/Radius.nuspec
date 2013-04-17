@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/frontporch/Radius.NET</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Fixed an issue with attribute offsets</releaseNotes>
+    <releaseNotes>Added support for Accounting Authenticator calculations</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>Radius .NET</tags>
   </metadata>

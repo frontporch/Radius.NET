@@ -58,7 +58,7 @@ namespace FP.Radius
 			PacketType = packetType;
 			Identifier = (Guid.NewGuid().ToByteArray())[0];
 			_Length = RADIUS_HEADER_LENGTH;
-			_Authenticator = Utils.RequestAuthenticator(sharedsecret);
+			_Authenticator = Utils.AccessRequestAuthenticator(sharedsecret);
 
 			RawData = new byte[RADIUS_HEADER_LENGTH];
 			RawData[RADIUS_CODE_INDEX] = (byte)PacketType;

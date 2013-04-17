@@ -5,7 +5,20 @@ namespace FP.Radius
 {
 	internal class Utils
 	{
-		public static byte[] RequestAuthenticator(string sharedSecret)
+		public static byte[] AccountingRequestAuthenticator(byte[] data, string sharedSecret)
+		{
+			byte[] sharedS = System.Text.Encoding.ASCII.GetBytes(sharedSecret);
+			byte[] sum = new byte[data.Length + sharedS.Length];
+
+			Array.Copy(data, 0, sum, 0, data.Length);
+			Array.Copy(sharedS, 0, sum, data.Length, sharedS.Length);
+			Array.Clear(data, 4, 16);
+			MD5 md5 = new MD5CryptoServiceProvider();
+			md5.ComputeHash(sum, 0, sum.Length);
+			return md5.Hash;
+		}
+		
+		public static byte[] AccessRequestAuthenticator(string sharedSecret)
 		{
 			byte[] sharedS = System.Text.Encoding.ASCII.GetBytes(sharedSecret);
 			byte[] requestAuthenticator = new byte[16 + sharedS.Length];
