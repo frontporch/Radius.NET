@@ -18,7 +18,7 @@ namespace FP.Radius
 
 		#region Private
 		private readonly List<RadiusAttribute> _Attributes = new List<RadiusAttribute>();
-		private readonly byte[] _Authenticator = new byte[RADIUS_AUTHENTICATOR_FIELD_LENGTH];
+		private byte[] _Authenticator = new byte[RADIUS_AUTHENTICATOR_FIELD_LENGTH];
 		private ushort _Length;
 		private NasPortType _NasPortType;
 		#endregion
@@ -53,19 +53,17 @@ namespace FP.Radius
 
 		#region Constructors
 		// Create a new RADIUS packet
-		public RadiusPacket(RadiusCode packetType, string sharedsecret)
+		public RadiusPacket(RadiusCode packetType)
 		{
 			PacketType = packetType;
 			Identifier = (Guid.NewGuid().ToByteArray())[0];
 			_Length = RADIUS_HEADER_LENGTH;
-			_Authenticator = Utils.AccessRequestAuthenticator(sharedsecret);
-
+			
 			RawData = new byte[RADIUS_HEADER_LENGTH];
 			RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
 			RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
 			Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
 			Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
-			Array.Copy(_Authenticator, 0, RawData, RADIUS_AUTHENTICATOR_INDEX, RADIUS_AUTHENTICATOR_FIELD_LENGTH);
 		}
 
 		// Parse received RADIUS packet
@@ -114,6 +112,43 @@ namespace FP.Radius
 			}
 		}
 		#endregion
+
+		public void SetAuthenticator(string sharedsecret, byte[] requestAuthenticator = null)
+		{
+			switch (PacketType)
+			{
+				case RadiusCode.ACCESS_REQUEST:
+					_Authenticator = Utils.AccessRequestAuthenticator(sharedsecret);
+					break;
+				case RadiusCode.ACCESS_ACCEPT:
+					_Authenticator = Utils.ResponseAuthenticator(RawData, requestAuthenticator, sharedsecret);
+					break;
+				case RadiusCode.ACCESS_REJECT:
+					break;
+				case RadiusCode.ACCOUNTING_REQUEST:
+					_Authenticator = Utils.AccountingRequestAuthenticator(RawData, sharedsecret);
+					break;
+				case RadiusCode.ACCOUNTING_RESPONSE:
+					_Authenticator = Utils.ResponseAuthenticator(RawData, requestAuthenticator, sharedsecret);
+					break;
+				case RadiusCode.ACCOUNTING_STATUS:
+					break;
+				case RadiusCode.PASSWORD_REQUEST:
+					break;
+				case RadiusCode.PASSWORD_ACCEPT:
+					break;
+				case RadiusCode.PASSWORD_REJECT:
+					break;
+				case RadiusCode.ACCOUNTING_MESSAGE:
+					break;
+				case RadiusCode.ACCESS_CHALLENGE:
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+			
+			Array.Copy(_Authenticator, 0, RawData, RADIUS_AUTHENTICATOR_INDEX, RADIUS_AUTHENTICATOR_FIELD_LENGTH);
+		}
 
 		public void SetAttribute(RadiusAttribute attribute)
 		{			

@@ -52,7 +52,8 @@ namespace FP.Radius
 		#region Public Methods
 		public RadiusPacket Authenticate(string username, string password)
 		{
-			RadiusPacket packet = new RadiusPacket(RadiusCode.ACCESS_REQUEST, _SharedSecret);
+			RadiusPacket packet = new RadiusPacket(RadiusCode.ACCESS_REQUEST);
+			packet.SetAuthenticator(_SharedSecret);
 			byte[] encryptedPass = Utils.EncodePapPassword(Encoding.ASCII.GetBytes(password), packet.Authenticator, _SharedSecret);
 			packet.SetAttribute(new RadiusAttribute(RadiusAttributeType.USER_NAME, Encoding.ASCII.GetBytes(username)));
 			packet.SetAttribute(new RadiusAttribute(RadiusAttributeType.USER_PASSWORD, encryptedPass));
@@ -123,7 +124,7 @@ namespace FP.Radius
 				&& receivedPacket.Authenticator.SequenceEqual(Utils.ResponseAuthenticator(receivedPacket.RawData, requestedPacket.Authenticator, _SharedSecret));
 		}
 
-		public bool VerifyAccountingAuthenticator(byte[] radiusPacket, string secret)
+		public static bool VerifyAccountingAuthenticator(byte[] radiusPacket, string secret)
 		{
 			var secretBytes = Encoding.ASCII.GetBytes(secret);
 

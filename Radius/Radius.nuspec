@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/frontporch/Radius.NET</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Added support for Accounting Authenticator calculations</releaseNotes>
+    <releaseNotes>Moved the creation of the Authenticator from the constructor to a method.</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>Radius .NET</tags>
   </metadata>

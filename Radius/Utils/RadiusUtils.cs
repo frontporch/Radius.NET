@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace FP.Radius
 {
-	internal class Utils
+	public class Utils
 	{
 		public static byte[] AccountingRequestAuthenticator(byte[] data, string sharedSecret)
 		{
