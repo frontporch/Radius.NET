@@ -66,6 +66,19 @@ namespace FP.Radius
 			Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
 		}
 
+		public RadiusPacket(RadiusCode packetType, byte identifier)
+		{
+			PacketType = packetType;
+			Identifier = identifier;
+			_Length = RADIUS_HEADER_LENGTH;
+
+			RawData = new byte[RADIUS_HEADER_LENGTH];
+			RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
+			RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
+			Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+			Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+		}
+
 		// Parse received RADIUS packet
 		public RadiusPacket(byte[] receivedData)
 		{
