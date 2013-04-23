@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/frontporch/Radius.NET</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Moved the creation of the Authenticator from the constructor to a method.</releaseNotes>
+    <releaseNotes>Fixed an issue with Vendor Specific Attributes</releaseNotes>
     <copyright>Copyright 2013</copyright>
     <tags>Radius .NET</tags>
   </metadata>
