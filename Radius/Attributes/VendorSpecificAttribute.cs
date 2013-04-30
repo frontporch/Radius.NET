@@ -10,9 +10,9 @@ namespace FP.Radius
 	{
 		#region Constants
 		private const uint VSA_ID_INDEX = 2;
-		private const byte VSA_TYPE_INDEX = 5;
-		private const byte VSA_LENGTH_INDEX = 6;
-		private const byte VSA_DATA_INDEX = 7;
+		private const byte VSA_TYPE_INDEX = 6;
+		private const byte VSA_LENGTH_INDEX = 7;
+		private const byte VSA_DATA_INDEX = 8;
 		#endregion
 
 		#region Properties
