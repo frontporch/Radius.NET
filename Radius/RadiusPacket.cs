@@ -163,6 +163,12 @@ namespace FP.Radius
 			Array.Copy(_Authenticator, 0, RawData, RADIUS_AUTHENTICATOR_INDEX, RADIUS_AUTHENTICATOR_FIELD_LENGTH);
 		}
 
+		public void SetIdentifier(byte id)
+		{
+			Identifier = id;
+			RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
+		}
+
 		public void SetAttribute(RadiusAttribute attribute)
 		{			
 			_Attributes.Add(attribute);

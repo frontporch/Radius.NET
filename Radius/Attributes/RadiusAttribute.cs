@@ -28,11 +28,14 @@ namespace FP.Radius
 				switch (Type)
 				{
 					case RadiusAttributeType.NAS_IP_ADDRESS:
+					case RadiusAttributeType.NAS_IPV6_ADDRESS:
 					case RadiusAttributeType.FRAMED_IP_ADDRESS:
 					case RadiusAttributeType.FRAMED_IP_NETMASK:
 					case RadiusAttributeType.LOGIN_IP_HOST:
+					case RadiusAttributeType.LOGIN_IPV6_HOST:
 						return new IPAddress(Data).ToString();
 					case RadiusAttributeType.FRAMED_PROTOCOL:
+					case RadiusAttributeType.FRAMED_IPV6_PREFIX:
 						Array.Reverse(Data);
 						return ((Protocol)(BitConverter.ToInt32(Data, 0))).ToString();
 					case RadiusAttributeType.FRAMED_ROUTING:
