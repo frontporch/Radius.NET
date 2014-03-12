@@ -55,10 +55,17 @@ namespace FP.Radius
 			Array.Copy(rawData, offset + VSA_ID_INDEX, vendorIDArray, 0, sizeof(uint));
 			Array.Reverse(vendorIDArray);
 			VendorId = BitConverter.ToUInt32(vendorIDArray, 0);
+
 			VendorSpecificType = rawData[VSA_TYPE_INDEX + offset];
 			VendorSpecificLength = rawData[VSA_LENGTH_INDEX + offset];
+			
 			Data = new byte[VendorSpecificLength - 2];
 			Array.Copy(rawData, offset + VSA_DATA_INDEX, Data, 0, VendorSpecificLength - 2);
+
+			Length = (byte)(Data.Length + VSA_DATA_INDEX);
+
+			RawData = new byte[VendorSpecificLength];
+			Array.Copy(rawData, offset, RawData, 0, VendorSpecificLength);
 		}
 		#endregion
 	}
