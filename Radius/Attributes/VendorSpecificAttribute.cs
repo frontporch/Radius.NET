@@ -24,8 +24,10 @@ namespace FP.Radius
 		#region Constructor
 		public VendorSpecificAttribute(uint vendorId, byte vendorSpecificType, byte[] vendorSpecificData) : base (RadiusAttributeType.VENDOR_SPECIFIC)
 		{
+			VendorId = vendorId;
+			VendorSpecificType = vendorSpecificType;
 			Data = vendorSpecificData;
-			
+
 			//Length is the actual data plus all the vendor specific header info
 			Length = (byte)(Data.Length + VSA_DATA_INDEX);
 
@@ -53,8 +55,8 @@ namespace FP.Radius
 			Array.Copy(rawData, offset + VSA_ID_INDEX, vendorIDArray, 0, sizeof(uint));
 			Array.Reverse(vendorIDArray);
 			VendorId = BitConverter.ToUInt32(vendorIDArray, 0);
-			VendorSpecificType = rawData[VSA_TYPE_INDEX];
-			VendorSpecificLength = rawData[VSA_LENGTH_INDEX];
+			VendorSpecificType = rawData[VSA_TYPE_INDEX + offset];
+			VendorSpecificLength = rawData[VSA_LENGTH_INDEX + offset];
 			Data = new byte[VendorSpecificLength - 2];
 			Array.Copy(rawData, offset + VSA_DATA_INDEX, Data, 0, VendorSpecificLength - 2);
 		}
