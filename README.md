@@ -13,16 +13,16 @@ Example Usage
 =============
 
 ```csharp
-string hostname = "UBUNTU-RADIUS";
-string sharedKey = "test";
-string username = "User1";
-string password = "test";
+var hostname = "UBUNTU-RADIUS";
+var sharedKey = "test";
+var username = "User1";
+var password = "test";
 
-RadiusClient rc = new RadiusClient(hostname, sharedKey);
-RadiusPacket authPacket = rc.Authenticate(username, password);
+var rc = new RadiusClient(hostname, sharedKey);
+var authPacket = rc.Authenticate(username, password);
 authPacket.SetAttribute(new VendorSpecificAttribute(10, 1, UTF8Encoding.UTF8.GetBytes("Testing")));
 authPacket.SetAttribute(new VendorSpecificAttribute(10, 2, new[] {(byte)7}));
-RadiusPacket receivedPacket = rc.SendAndReceivePacket(authPacket).Result;
+var receivedPacket = rc.SendAndReceivePacket(authPacket).Result;
 
 if (receivedPacket == null) 
 	throw new Exception("Can't contact remote radius server !");
