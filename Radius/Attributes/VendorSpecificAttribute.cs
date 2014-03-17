@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -67,6 +68,42 @@ namespace FP.Radius
 			RawData = new byte[VendorSpecificLength];
 			Array.Copy(rawData, offset, RawData, 0, VendorSpecificLength);
 		}
+
+		public static VendorSpecificAttribute CreateShort(uint vendorId, byte vendorSpecificType, short vendorSpecificData)
+		{
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+		}
+
+		public static VendorSpecificAttribute CreateUShort(uint vendorId, byte vendorSpecificType, ushort vendorSpecificData)
+		{
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+		}
+
+		public static VendorSpecificAttribute CreateInt(uint vendorId, byte vendorSpecificType, int vendorSpecificData)
+		{
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+		}
+
+		public static VendorSpecificAttribute CreateUInt(uint vendorId, byte vendorSpecificType, uint vendorSpecificData)
+		{
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+		}
+
+		public static VendorSpecificAttribute CreateLong(uint vendorId, byte vendorSpecificType, long vendorSpecificData)
+		{
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+		}
+
+		public static VendorSpecificAttribute CreateULong(uint vendorId, byte vendorSpecificType, ulong vendorSpecificData)
+		{
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
+		}
+
+		public static VendorSpecificAttribute CreateString(uint vendorId, byte vendorSpecificType, string vendorSpecificData)
+		{
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, ASCIIEncoding.UTF8.GetBytes(vendorSpecificData));
+		}
+
 		#endregion
 	}
 }

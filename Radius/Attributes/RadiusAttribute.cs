@@ -58,6 +58,10 @@ namespace FP.Radius
 					case RadiusAttributeType.LOGIN_TCP_PORT:
 						Array.Reverse(Data);
 						return (BitConverter.ToInt32(Data, 0)).ToString();
+					case RadiusAttributeType.TUNNEL_TYPE:
+						return ((TunnelType)Utils.ThreeBytes2UInt(Data, 0)).ToString();
+					case RadiusAttributeType.TUNNEL_MEDIUM_TYPE:
+						return ((TunnelMediumType)Utils.ThreeBytes2UInt(Data, 0)).ToString();
 					default:
 						return BitConverter.ToString(Data);
 				}
@@ -86,6 +90,40 @@ namespace FP.Radius
 			Array.Copy(data, 0, RawData, ATTRIBUTE_HEADER_SIZE, data.Length);
 		}
 
+		public static RadiusAttribute CreateShort(RadiusAttributeType type, short data)
+		{
+			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+		}
+
+		public static RadiusAttribute CreateUShort(RadiusAttributeType type, ushort data)
+		{
+			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+		}
+
+		public static RadiusAttribute CreateInt(RadiusAttributeType type, int data)
+		{
+			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+		}
+
+		public static RadiusAttribute CreateUInt(RadiusAttributeType type, uint data)
+		{
+			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+		}
+
+		public static RadiusAttribute CreateLong(RadiusAttributeType type, long data)
+		{
+			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+		}
+
+		public static RadiusAttribute CreateULong(RadiusAttributeType type, ulong data)
+		{
+			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
+		}
+
+		public static RadiusAttribute CreateString(RadiusAttributeType type, string data)
+		{
+			return new RadiusAttribute(type, ASCIIEncoding.UTF8.GetBytes(data));
+		}
 		#endregion
 
 	}
