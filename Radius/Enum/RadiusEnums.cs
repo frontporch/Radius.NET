@@ -12,7 +12,10 @@ namespace FP.Radius
 		PASSWORD_ACCEPT = 8,
 		PASSWORD_REJECT = 9,
 		ACCOUNTING_MESSAGE = 10,
-		ACCESS_CHALLENGE = 11,
+        ACCESS_CHALLENGE = 11,
+        COA_REQUEST = 43,
+        COA_ACK = 44,
+        COA_NACK = 45
 	}
 
 	public enum RadiusAttributeType
