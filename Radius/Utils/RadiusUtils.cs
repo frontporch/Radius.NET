@@ -17,7 +17,7 @@ namespace FP.Radius
 			md5.ComputeHash(sum, 0, sum.Length);
 			return md5.Hash;
 		}
-		
+
 		public static byte[] AccessRequestAuthenticator(string sharedSecret)
 		{
 			byte[] sharedS = System.Text.Encoding.ASCII.GetBytes(sharedSecret);
