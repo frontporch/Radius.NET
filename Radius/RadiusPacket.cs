@@ -159,6 +159,9 @@ namespace FP.Radius
                 case RadiusCode.COA_REQUEST:
                     _Authenticator = Utils.AccountingRequestAuthenticator(RawData, sharedsecret);
                     break;
+                case RadiusCode.DISCONNECT_REQUEST:
+                    _Authenticator = Utils.AccountingRequestAuthenticator(RawData, sharedsecret);
+                    break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
