@@ -13,6 +13,9 @@ namespace FP.Radius
 		PASSWORD_REJECT = 9,
 		ACCOUNTING_MESSAGE = 10,
         ACCESS_CHALLENGE = 11,
+        DISCONNECT_REQUEST = 40,
+        DISCONNECT_ACK = 41,
+        DISCONNECT_NACK = 42,
         COA_REQUEST = 43,
         COA_ACK = 44,
         COA_NACK = 45
