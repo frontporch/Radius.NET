@@ -90,39 +90,45 @@ namespace FP.Radius
 			Array.Copy(data, 0, RawData, ATTRIBUTE_HEADER_SIZE, data.Length);
 		}
 
-		public static RadiusAttribute CreateShort(RadiusAttributeType type, short data)
+		public static RadiusAttribute ToInt16(RadiusAttributeType type, short data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
-		public static RadiusAttribute CreateUShort(RadiusAttributeType type, ushort data)
+		public static RadiusAttribute ToUInt16(RadiusAttributeType type, ushort data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
-		public static RadiusAttribute CreateInt(RadiusAttributeType type, int data)
+		public static RadiusAttribute ToInt32(RadiusAttributeType type, int data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
-		public static RadiusAttribute CreateUInt(RadiusAttributeType type, uint data)
+		public static RadiusAttribute ToUInt32(RadiusAttributeType type, uint data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
-		public static RadiusAttribute CreateLong(RadiusAttributeType type, long data)
+		public static RadiusAttribute ToInt64(RadiusAttributeType type, long data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
-		public static RadiusAttribute CreateULong(RadiusAttributeType type, ulong data)
+		public static RadiusAttribute ToUInt64(RadiusAttributeType type, ulong data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
+		/// <summary>
+		/// Creates a RADIUS attribute that has a string value type
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="data">UTF8 will be used for encoding</param>
+		/// <returns></returns>
 		public static RadiusAttribute CreateString(RadiusAttributeType type, string data)
 		{
-			return new RadiusAttribute(type, ASCIIEncoding.UTF8.GetBytes(data));
+			return new RadiusAttribute(type, Encoding.UTF8.GetBytes(data));
 		}
 		#endregion
 

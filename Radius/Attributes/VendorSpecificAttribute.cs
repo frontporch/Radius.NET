@@ -69,39 +69,46 @@ namespace FP.Radius
 			Array.Copy(rawData, offset, RawData, 0, VendorSpecificLength);
 		}
 
-		public static VendorSpecificAttribute CreateShort(uint vendorId, byte vendorSpecificType, short vendorSpecificData)
+		public static VendorSpecificAttribute ToInt16(uint vendorId, byte vendorSpecificType, short vendorSpecificData)
 		{
 			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
 		}
 
-		public static VendorSpecificAttribute CreateUShort(uint vendorId, byte vendorSpecificType, ushort vendorSpecificData)
+		public static VendorSpecificAttribute ToUInt16(uint vendorId, byte vendorSpecificType, ushort vendorSpecificData)
 		{
 			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
 		}
 
-		public static VendorSpecificAttribute CreateInt(uint vendorId, byte vendorSpecificType, int vendorSpecificData)
+		public static VendorSpecificAttribute ToInt32(uint vendorId, byte vendorSpecificType, int vendorSpecificData)
 		{
 			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
 		}
 
-		public static VendorSpecificAttribute CreateUInt(uint vendorId, byte vendorSpecificType, uint vendorSpecificData)
+		public static VendorSpecificAttribute ToUInt32(uint vendorId, byte vendorSpecificType, uint vendorSpecificData)
 		{
 			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
 		}
 
-		public static VendorSpecificAttribute CreateLong(uint vendorId, byte vendorSpecificType, long vendorSpecificData)
+		public static VendorSpecificAttribute ToInt64(uint vendorId, byte vendorSpecificType, long vendorSpecificData)
 		{
 			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
 		}
 
-		public static VendorSpecificAttribute CreateULong(uint vendorId, byte vendorSpecificType, ulong vendorSpecificData)
+		public static VendorSpecificAttribute ToUInt64(uint vendorId, byte vendorSpecificType, ulong vendorSpecificData)
 		{
 			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Utils.GetNetworkBytes(vendorSpecificData));
 		}
 
+		/// <summary>
+		/// Creates a vendor specific attribute that has a string value type
+		/// </summary>
+		/// <param name="vendorId"></param>
+		/// <param name="vendorSpecificType">Type of vendor avp</param>
+		/// <param name="vendorSpecificData">UTF8 will be used for encoding</param>
+		/// <returns></returns>
 		public static VendorSpecificAttribute CreateString(uint vendorId, byte vendorSpecificType, string vendorSpecificData)
 		{
-			return new VendorSpecificAttribute(vendorId, vendorSpecificType, ASCIIEncoding.UTF8.GetBytes(vendorSpecificData));
+			return new VendorSpecificAttribute(vendorId, vendorSpecificType, Encoding.UTF8.GetBytes(vendorSpecificData));
 		}
 
 		#endregion
