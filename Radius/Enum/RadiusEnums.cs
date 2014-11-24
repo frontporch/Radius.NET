@@ -79,6 +79,8 @@ namespace FP.Radius
 		NAS_PORT_TYPE = 61,
 		PORT_LIMIT = 62,
 		LOGIN_LAT_PORT = 63,
+		TUNNEL_TYPE = 64,
+		TUNNEL_MEDIUM_TYPE = 65,
 		ARAP_PASSWORD = 70,
 		ARAP_FEATURES = 71,
 		ARAP_ZONE_ACCESS = 72,
@@ -180,5 +182,41 @@ namespace FP.Radius
 		CABLE = 17,
 		WIRELESS_OTHER = 18,
 		WIRELESS_IEEE_802_11 = 19
+	}
+
+	public enum TunnelType
+	{
+		None = 0,
+		PPTP,
+		L2F,
+		L2TP,
+		ATMP,
+		VTP,
+		AH,
+		IP_IP,
+		MIN_IP_IP,
+		ESP,
+		GRE,
+		DVS,
+		IPinIP
+	}
+
+	public enum TunnelMediumType
+	{
+		IPv4 = 1,
+		IPv6,
+		NSAP,
+		HDLC,
+		BBN,
+		IEEE802,
+		E163,
+		E164,
+		F69,
+		X121,
+		IPX,
+		AppleTalk,
+		DecnetIV,
+		BanyanVines,
+		E164_NSAP
 	}
 }

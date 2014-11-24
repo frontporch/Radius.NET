@@ -10,8 +10,8 @@
     <projectUrl>https://github.com/frontporch/Radius.NET</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Created a method for setting the Identifier</releaseNotes>
-    <copyright>Copyright 2013</copyright>
+    <releaseNotes>Added Tunnel Type/Medium support.  Added convenience methods for creating attributes from value types</releaseNotes>
+    <copyright>Copyright 2014</copyright>
     <tags>Radius .NET</tags>
   </metadata>
 </package>

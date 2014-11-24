@@ -17,36 +17,37 @@ namespace ClientTest
 				return;
 			}
 
-			try
+			Authenticate(args).ContinueWith(task => 
 			{
-				RadiusClient rc = new RadiusClient(args[0], args[1]);
-				RadiusPacket authPacket = rc.Authenticate(args[2], args[3]);
-				authPacket.SetAttribute(new VendorSpecificAttribute(10135, 1, UTF8Encoding.UTF8.GetBytes("Testing")));
-				authPacket.SetAttribute(new VendorSpecificAttribute(10135, 2, new[] {(byte)7}));
-				RadiusPacket receivedPacket = rc.SendAndReceivePacket(authPacket).Result;
-				if (receivedPacket == null) throw new Exception("Can't contact remote radius server !");
-				switch (receivedPacket.PacketType)
-				{
-					case RadiusCode.ACCESS_ACCEPT:
-						Console.WriteLine("Accepted");
-						foreach (var attr in receivedPacket.Attributes)
-							Console.WriteLine(attr.Type.ToString() + " = " + attr.Value);
-						break;
-					case RadiusCode.ACCESS_CHALLENGE:
-						Console.WriteLine("Challenged");
-						break;
-					default:
-						Console.WriteLine("Rejected");
-						break;
-				}
-				
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine("Error : " + e.Message);
-			}
+				if (task.IsFaulted)
+					Console.WriteLine("Error : " + task.Exception.Message);
 
-			Console.ReadLine();
+				Console.ReadLine();
+			});
+		}
+
+		private async static Task Authenticate(string[] args)
+		{
+			RadiusClient rc = new RadiusClient(args[0], args[1]);
+			RadiusPacket authPacket = rc.Authenticate(args[2], args[3]);
+			authPacket.SetAttribute(new VendorSpecificAttribute(10135, 1, UTF8Encoding.UTF8.GetBytes("Testing")));
+			authPacket.SetAttribute(new VendorSpecificAttribute(10135, 2, new[] { (byte)7 }));
+			RadiusPacket receivedPacket = await rc.SendAndReceivePacket(authPacket);
+			if (receivedPacket == null) throw new Exception("Can't contact remote radius server !");
+			switch (receivedPacket.PacketType)
+			{
+				case RadiusCode.ACCESS_ACCEPT:
+					Console.WriteLine("Accepted");
+					foreach (var attr in receivedPacket.Attributes)
+						Console.WriteLine(attr.Type.ToString() + " = " + attr.Value);
+					break;
+				case RadiusCode.ACCESS_CHALLENGE:
+					Console.WriteLine("Challenged");
+					break;
+				default:
+					Console.WriteLine("Rejected");
+					break;
+			}	
 		}
 
 		private static void ShowUsage()
