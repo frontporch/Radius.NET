@@ -90,32 +90,32 @@ namespace FP.Radius
 			Array.Copy(data, 0, RawData, ATTRIBUTE_HEADER_SIZE, data.Length);
 		}
 
-		public static RadiusAttribute ToInt16(RadiusAttributeType type, short data)
+		public static RadiusAttribute CreateInt16(RadiusAttributeType type, short data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
-		public static RadiusAttribute ToUInt16(RadiusAttributeType type, ushort data)
+		public static RadiusAttribute CreateUInt16(RadiusAttributeType type, ushort data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
-		public static RadiusAttribute ToInt32(RadiusAttributeType type, int data)
+		public static RadiusAttribute CreateInt32(RadiusAttributeType type, int data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
-		public static RadiusAttribute ToUInt32(RadiusAttributeType type, uint data)
+		public static RadiusAttribute CreateUInt32(RadiusAttributeType type, uint data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
-		public static RadiusAttribute ToInt64(RadiusAttributeType type, long data)
+		public static RadiusAttribute CreateInt64(RadiusAttributeType type, long data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
-		public static RadiusAttribute ToUInt64(RadiusAttributeType type, ulong data)
+		public static RadiusAttribute CreateUInt64(RadiusAttributeType type, ulong data)
 		{
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
