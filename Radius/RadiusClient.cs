@@ -28,6 +28,7 @@ namespace FP.Radius
 		private uint _AuthRetries = DEFAULT_RETRIES;
 		private uint _AcctRetries = DEFAULT_RETRIES;
 		private int _SocketTimeout = DEFAULT_SOCKET_TIMEOUT;
+		private IPEndPoint _LocalEndPoint;
 		#endregion
 
 		#region Properties
@@ -39,11 +40,16 @@ namespace FP.Radius
 		#endregion
 
 		#region Constructors
-		public RadiusClient(string hostName, string sharedSecret, int sockTimeout = DEFAULT_SOCKET_TIMEOUT, uint authPort = DEFAULT_AUTH_PORT, uint acctPort = DEFAULT_ACCT_PORT)
+		public RadiusClient(string hostName, string sharedSecret, 
+							int sockTimeout = DEFAULT_SOCKET_TIMEOUT, 
+							uint authPort = DEFAULT_AUTH_PORT, 
+							uint acctPort = DEFAULT_ACCT_PORT,
+							IPEndPoint localEndPoint = null)
 		{
 			_HostName = hostName;
 			_AuthPort = authPort;
 			_AcctPort = acctPort;
+			_LocalEndPoint = localEndPoint;
 			_SharedSecret = sharedSecret;
 			_SocketTimeout = sockTimeout;
 		}
@@ -68,8 +74,14 @@ namespace FP.Radius
 
 				try
 				{
+					// Starting with Vista, we are able to bind to a local endpoint to guarantee the packet
+					// will be sent out a particular interface
+					// This is explained in the following blog
+					// http://blogs.technet.com/b/networking/archive/2009/04/25/source-ip-address-selection-on-a-multi-homed-windows-computer.aspx
+					if(_LocalEndPoint != null)
+						udpClient.Client.Bind(_LocalEndPoint);
+					
 					IPAddress hostIP;
-
 					if (IPAddress.TryParse(_HostName, out hostIP))
 						udpClient.Connect(hostIP, (int) _AuthPort);
 					else
