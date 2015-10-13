@@ -16,13 +16,11 @@ namespace ClientTest
 				ShowUsage();
 				return;
 			}
-
+			
 			Authenticate(args).ContinueWith(task => 
 			{
 				if (task.IsFaulted)
 					Console.WriteLine("Error : " + task.Exception.Message);
-
-				Console.ReadLine();
 			});
 		}
 
@@ -33,7 +31,12 @@ namespace ClientTest
 			authPacket.SetAttribute(new VendorSpecificAttribute(10135, 1, UTF8Encoding.UTF8.GetBytes("Testing")));
 			authPacket.SetAttribute(new VendorSpecificAttribute(10135, 2, new[] { (byte)7 }));
 			RadiusPacket receivedPacket = await rc.SendAndReceivePacket(authPacket);
+
 			if (receivedPacket == null) throw new Exception("Can't contact remote radius server !");
+
+			if (!rc.VerifyAuthenticator(authPacket, receivedPacket))
+			   Console.WriteLine("Bad secret!");
+
 			switch (receivedPacket.PacketType)
 			{
 				case RadiusCode.ACCESS_ACCEPT:

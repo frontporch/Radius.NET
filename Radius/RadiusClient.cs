@@ -112,7 +112,7 @@ namespace FP.Radius
 						var result = udpClient.Receive(ref endPoint);
 						RadiusPacket receivedPacket = new RadiusPacket(result);
 
-						if (receivedPacket.Valid && VerifyAuthenticator(packet, receivedPacket))
+						if (receivedPacket.Valid)
 							return receivedPacket;
 					}
 					catch (SocketException)
@@ -130,7 +130,7 @@ namespace FP.Radius
 		#endregion
 
 		#region Private Methods
-		private bool VerifyAuthenticator(RadiusPacket requestedPacket, RadiusPacket receivedPacket)
+		public bool VerifyAuthenticator(RadiusPacket requestedPacket, RadiusPacket receivedPacket)
 		{
 			return requestedPacket.Identifier == receivedPacket.Identifier 
 				&& receivedPacket.Authenticator.SequenceEqual(Utils.ResponseAuthenticator(receivedPacket.RawData, requestedPacket.Authenticator, _SharedSecret));
