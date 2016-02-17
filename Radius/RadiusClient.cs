@@ -72,9 +72,9 @@ namespace FP.Radius
 			{
 				udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, _SocketTimeout);
 
-                IPAddress hostIP = null;
+				IPAddress hostIP = null;
 
-                try
+				try
 				{
 					// Starting with Vista, we are able to bind to a local endpoint to guarantee the packet
 					// will be sent out a particular interface
@@ -84,15 +84,14 @@ namespace FP.Radius
 						udpClient.Client.Bind(_LocalEndPoint);
 					
 					if(!IPAddress.TryParse(_HostName, out hostIP))
-                    {
-                        //Try performing a DNS lookup
-                        var host = Dns.GetHostEntry(_HostName);
-                        var ipv4Addresses = host.AddressList.Where(a => a.AddressFamily == AddressFamily.InterNetwork);
-                        if (ipv4Addresses.Count() == 0)
-                            throw new Exception("Resolving " + _HostName + " returned no hits in DNS");
+					{
+						//Try performing a DNS lookup
+						var host = Dns.GetHostEntry(_HostName);
+						hostIP = host.AddressList.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
+						if (hostIP == null)
+							throw new Exception("Resolving " + _HostName + " returned no hits in DNS");
 
-                        hostIP = ipv4Addresses.First();
-                    }
+					}
 				}
 				catch (SocketException e)
 				{
