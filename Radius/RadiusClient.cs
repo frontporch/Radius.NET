@@ -72,6 +72,8 @@ namespace FP.Radius
 			{
 				udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, _SocketTimeout);
 
+				IPAddress hostIP = null;
+
 				try
 				{
 					// Starting with Vista, we are able to bind to a local endpoint to guarantee the packet
@@ -81,12 +83,15 @@ namespace FP.Radius
 					if(_LocalEndPoint != null)
 						udpClient.Client.Bind(_LocalEndPoint);
 					
-					IPAddress hostIP;
-					if (IPAddress.TryParse(_HostName, out hostIP))
-						udpClient.Connect(hostIP, (int) _AuthPort);
-					else
-						udpClient.Connect(_HostName, (int) _AuthPort);
-					
+					if(!IPAddress.TryParse(_HostName, out hostIP))
+					{
+						//Try performing a DNS lookup
+						var host = Dns.GetHostEntry(_HostName);
+						hostIP = host.AddressList.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
+						if (hostIP == null)
+							throw new Exception("Resolving " + _HostName + " returned no hits in DNS");
+
+					}
 				}
 				catch (SocketException e)
 				{
@@ -98,13 +103,12 @@ namespace FP.Radius
 						return null;
 				}
 
-				var endPoint = (IPEndPoint)udpClient.Client.RemoteEndPoint;
-
+				var endPoint = new IPEndPoint(hostIP, (int)_AuthPort);
 				int numberOfAttempts = 0;
 
 				do
 				{
-					await udpClient.SendAsync(packet.RawData, packet.RawData.Length);
+					await udpClient.SendAsync(packet.RawData, packet.RawData.Length, endPoint);
 
 					try
 					{
