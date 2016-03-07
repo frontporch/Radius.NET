@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace FP.Radius
 {
@@ -29,14 +28,14 @@ namespace FP.Radius
 		public byte Identifier { get; private set; }
 		public byte[] Header { get; private set; }
 		public bool Valid { get; private set; }
-		
+
 		public NasPortType NasPortType
 		{
 			get { return _NasPortType; }
 			set
 			{
 				_NasPortType = value;
-				_Attributes.Add(new RadiusAttribute(RadiusAttributeType.NAS_PORT_TYPE, BitConverter.GetBytes((int) value)));
+				_Attributes.Add(new RadiusAttribute(RadiusAttributeType.NAS_PORT_TYPE, BitConverter.GetBytes((int)value)));
 			}
 		}
 
@@ -58,7 +57,7 @@ namespace FP.Radius
 			PacketType = packetType;
 			Identifier = (Guid.NewGuid().ToByteArray())[0];
 			_Length = RADIUS_HEADER_LENGTH;
-			
+
 			RawData = new byte[RADIUS_HEADER_LENGTH];
 			RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
 			RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
@@ -156,16 +155,16 @@ namespace FP.Radius
 					break;
 				case RadiusCode.ACCESS_CHALLENGE:
 					break;
-                case RadiusCode.COA_REQUEST:
-                    _Authenticator = Utils.AccountingRequestAuthenticator(RawData, sharedsecret);
-                    break;
-                case RadiusCode.DISCONNECT_REQUEST:
-                    _Authenticator = Utils.AccountingRequestAuthenticator(RawData, sharedsecret);
-                    break;
+				case RadiusCode.COA_REQUEST:
+					_Authenticator = Utils.AccountingRequestAuthenticator(RawData, sharedsecret);
+					break;
+				case RadiusCode.DISCONNECT_REQUEST:
+					_Authenticator = Utils.AccountingRequestAuthenticator(RawData, sharedsecret);
+					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
-			
+
 			Array.Copy(_Authenticator, 0, RawData, RADIUS_AUTHENTICATOR_INDEX, RADIUS_AUTHENTICATOR_FIELD_LENGTH);
 		}
 
@@ -176,7 +175,7 @@ namespace FP.Radius
 		}
 
 		public void SetAttribute(RadiusAttribute attribute)
-		{			
+		{
 			_Attributes.Add(attribute);
 
 			//Make an array with a size of the current RawData plus the new attribute
@@ -203,8 +202,8 @@ namespace FP.Radius
 			while (currentAttributeOffset < attributeByteArray.Length)
 			{
 				//Get the RADIUS attribute type
-				RadiusAttributeType type = (RadiusAttributeType) attributeByteArray[currentAttributeOffset];
-				
+				RadiusAttributeType type = (RadiusAttributeType)attributeByteArray[currentAttributeOffset];
+
 				//Get the RADIUS attribute length
 				byte length = attributeByteArray[currentAttributeOffset + 1];
 
@@ -220,8 +219,8 @@ namespace FP.Radius
 				Array.Copy(attributeByteArray, currentAttributeOffset + 2, data, 0, length - 2);
 
 				_Attributes.Add(type == RadiusAttributeType.VENDOR_SPECIFIC
-					                ? new VendorSpecificAttribute(attributeByteArray, currentAttributeOffset)
-					                : new RadiusAttribute(type, data));
+									? new VendorSpecificAttribute(attributeByteArray, currentAttributeOffset)
+									: new RadiusAttribute(type, data));
 
 				currentAttributeOffset += length;
 			}

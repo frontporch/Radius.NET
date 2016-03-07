@@ -1,12 +1,10 @@
 using System;
-using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace FP.Radius
@@ -40,9 +38,9 @@ namespace FP.Radius
 		#endregion
 
 		#region Constructors
-		public RadiusClient(string hostName, string sharedSecret, 
-							int sockTimeout = DEFAULT_SOCKET_TIMEOUT, 
-							uint authPort = DEFAULT_AUTH_PORT, 
+		public RadiusClient(string hostName, string sharedSecret,
+							int sockTimeout = DEFAULT_SOCKET_TIMEOUT,
+							uint authPort = DEFAULT_AUTH_PORT,
 							uint acctPort = DEFAULT_ACCT_PORT,
 							IPEndPoint localEndPoint = null)
 		{
@@ -80,10 +78,10 @@ namespace FP.Radius
 					// will be sent out a particular interface
 					// This is explained in the following blog
 					// http://blogs.technet.com/b/networking/archive/2009/04/25/source-ip-address-selection-on-a-multi-homed-windows-computer.aspx
-					if(_LocalEndPoint != null)
+					if (_LocalEndPoint != null)
 						udpClient.Client.Bind(_LocalEndPoint);
-					
-					if(!IPAddress.TryParse(_HostName, out hostIP))
+
+					if (!IPAddress.TryParse(_HostName, out hostIP))
 					{
 						//Try performing a DNS lookup
 						var host = Dns.GetHostEntry(_HostName);
@@ -108,15 +106,15 @@ namespace FP.Radius
 
 				do
 				{
-					await udpClient.SendAsync(packet.RawData, packet.RawData.Length, endPoint);
-
 					try
 					{
+						await udpClient.SendAsync(packet.RawData, packet.RawData.Length, endPoint);
+
 						// Using the synchronous method for the timeout features
 						var result = udpClient.Receive(ref endPoint);
 						RadiusPacket receivedPacket = new RadiusPacket(result);
 
-						if (receivedPacket.Valid && VerifyAuthenticator(packet, receivedPacket))
+						if (receivedPacket.Valid)
 							return receivedPacket;
 					}
 					catch (SocketException)
@@ -134,9 +132,9 @@ namespace FP.Radius
 		#endregion
 
 		#region Private Methods
-		private bool VerifyAuthenticator(RadiusPacket requestedPacket, RadiusPacket receivedPacket)
+		public bool VerifyAuthenticator(RadiusPacket requestedPacket, RadiusPacket receivedPacket)
 		{
-			return requestedPacket.Identifier == receivedPacket.Identifier 
+			return requestedPacket.Identifier == receivedPacket.Identifier
 				&& receivedPacket.Authenticator.SequenceEqual(Utils.ResponseAuthenticator(receivedPacket.RawData, requestedPacket.Authenticator, _SharedSecret));
 		}
 
