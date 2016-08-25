@@ -10,8 +10,12 @@
     <projectUrl>https://github.com/frontporch/Radius.NET</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Added Tunnel Type/Medium support.  Added convenience methods for creating attributes from value types</releaseNotes>
-    <copyright>Copyright 2014</copyright>
+    <releaseNotes>
+      Added Server-Status support
+      Added a Ping() method to the RadiusClient to allow easy sending of Server-Status packets
+      ** Potentially Incompatible Change ** No longer call VerifyAuthenticator inside of SendAndReceivePacket which results in packets being returned that should fail authentication.  Callers should do this instead once the response packet has been received from the RADIUS server.
+    </releaseNotes>
+    <copyright>Copyright 2016</copyright>
     <tags>Radius .NET</tags>
   </metadata>
 </package>
