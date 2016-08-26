@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace FP.Radius
 {
@@ -11,6 +13,8 @@ namespace FP.Radius
 		private const byte RADIUS_LENGTH_INDEX = 2;
 		private const byte RADIUS_AUTHENTICATOR_INDEX = 4;
 		private const byte RADIUS_AUTHENTICATOR_FIELD_LENGTH = 16;
+		private const byte RADIUS_MESSAGE_AUTH_HASH_LENGTH = 16;
+		private const byte RADIUS_MESSAGE_AUTHENTICATOR_LENGTH = 18;
 		private const byte ATTRIBUTES_INDEX = 20;
 		private const byte RADIUS_HEADER_LENGTH = ATTRIBUTES_INDEX;
 		#endregion
@@ -155,6 +159,9 @@ namespace FP.Radius
 					break;
 				case RadiusCode.ACCESS_CHALLENGE:
 					break;
+				case RadiusCode.SERVER_STATUS:
+					_Authenticator = Utils.AccessRequestAuthenticator(sharedsecret);
+					break;
 				case RadiusCode.COA_REQUEST:
 					_Authenticator = Utils.AccountingRequestAuthenticator(RawData, sharedsecret);
 					break;
@@ -193,6 +200,31 @@ namespace FP.Radius
 			_Length = (ushort)RawData.Length;
 			Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
 			Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+		}
+
+		/// <summary>
+		/// Sets the Message-Autheticator attribute on a RADIUS packet.  This should be called as a last step after all attributes have been added
+		/// </summary>
+		/// <param name="sharedSecret"></param>
+		public void SetMessageAuthenticator(string sharedSecret)
+		{
+			// We need to add the Message-Authenticator attribute with 16 octects of zero
+			byte[] newRawData = new byte[RawData.Length + RADIUS_MESSAGE_AUTHENTICATOR_LENGTH];
+			// Copy the current packet into the new array
+			Array.Copy(RawData, 0, newRawData, 0, RawData.Length);
+			// Adjust the length field of the packet to account for the new attribute
+			Array.Copy(BitConverter.GetBytes(newRawData.Length), 0, newRawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+			Array.Reverse(newRawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+			// Set the type and length of the Message-Authenticator attribute
+			newRawData[RawData.Length] = (byte)RadiusAttributeType.MESSAGE_AUTHENTICATOR;
+			newRawData[RawData.Length + 1] = RADIUS_MESSAGE_AUTHENTICATOR_LENGTH;
+			// Calculate the hash of the new array using the shared secret
+			HMACMD5 hmacmd5 = new HMACMD5(Encoding.ASCII.GetBytes(sharedSecret));
+			var hash = hmacmd5.ComputeHash(newRawData);
+			// Copy the hash value into the 16 octects to replace the 0's with the actual hash
+			Array.Copy(hash, 0, newRawData, newRawData.Length - RADIUS_MESSAGE_AUTH_HASH_LENGTH, hash.Length);
+			// Set the final result as the new RawData
+			RawData = newRawData;
 		}
 
 		private void ParseAttributes(byte[] attributeByteArray)

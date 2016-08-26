@@ -129,6 +129,22 @@ namespace FP.Radius
 
 			return null;
 		}
+
+		/// <summary>
+		/// Sends a Server-Status packet using the shared secret of the client
+		/// </summary>
+		/// <returns></returns>
+		public async Task<RadiusPacket> Ping()
+		{
+			// Create a new RADIUS packet with the Server-Status code
+			RadiusPacket authPacket = new RadiusPacket(RadiusCode.SERVER_STATUS);
+			// Populate the Request-Authenticator
+			authPacket.SetAuthenticator(_SharedSecret);
+			// Add the Message-Authenticator as a last step.  Note: Server-Status packets don't require any other attributes
+			authPacket.SetMessageAuthenticator(_SharedSecret);
+			// We MUST NOT retransmit Server-Status packets according to https://tools.ietf.org/html/rfc5997
+			return await SendAndReceivePacket(authPacket, 0);
+		}
 		#endregion
 
 		#region Private Methods

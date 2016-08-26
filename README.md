@@ -30,12 +30,17 @@ if (receivedPacket == null)
 switch (receivedPacket.PacketType)
 {
 	case RadiusCode.ACCESS_ACCEPT:
-		Console.WriteLine("Accepted");
+		Console.WriteLine("Access-Accept");
 		foreach (var attr in receivedPacket.Attributes)
 			Console.WriteLine(attr.Type.ToString() + " = " + attr.Value);
 		break;
 	case RadiusCode.ACCESS_CHALLENGE:
-		Console.WriteLine("Challenged");
+		Console.WriteLine("Access-Challenge");
+		break;
+	case RadiusCode.ACCESS_REJECT:
+		Console.WriteLine("Access-Reject");
+		if (!rc.VerifyAuthenticator(authPacket, receivedPacket))
+			Console.WriteLine("Authenticator check failed: Check your secret");
 		break;
 	default:
 		Console.WriteLine("Rejected");
