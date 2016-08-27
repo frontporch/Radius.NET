@@ -62,11 +62,11 @@ namespace FP.Radius
 			Identifier = (Guid.NewGuid().ToByteArray())[0];
 			_Length = RADIUS_HEADER_LENGTH;
 
-			RawData = new byte[RADIUS_HEADER_LENGTH];
-			RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
-			RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
-			Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
-			Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+			//RawData = new byte[RADIUS_HEADER_LENGTH];
+			//RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
+			//RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
+			//Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+			//Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
 		}
 
 		public RadiusPacket(RadiusCode packetType, byte identifier)
@@ -75,11 +75,29 @@ namespace FP.Radius
 			Identifier = identifier;
 			_Length = RADIUS_HEADER_LENGTH;
 
-			RawData = new byte[RADIUS_HEADER_LENGTH];
+			//RawData = new byte[RADIUS_HEADER_LENGTH];
+			//RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
+			//RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
+			//Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+			//Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+		}
+
+		public void Encode()
+		{
+			RawData = new byte[_Length];
 			RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
 			RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
 			Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
 			Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+
+			Array.Copy(_Authenticator, 0, RawData, RADIUS_AUTHENTICATOR_INDEX, RADIUS_AUTHENTICATOR_FIELD_LENGTH);
+
+			int offset = ATTRIBUTES_INDEX;
+			for (int i = 0; i < _Attributes.Count; i++)
+			{
+				Array.Copy(_Attributes[i].RawData, 0, RawData, offset, _Attributes[i].RawData.Length);
+				offset += _Attributes[i].RawData.Length;
+			}
 		}
 
 		// Parse received RADIUS packet
@@ -171,8 +189,6 @@ namespace FP.Radius
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
-
-			Array.Copy(_Authenticator, 0, RawData, RADIUS_AUTHENTICATOR_INDEX, RADIUS_AUTHENTICATOR_FIELD_LENGTH);
 		}
 
 		public void SetIdentifier(byte id)
@@ -184,22 +200,22 @@ namespace FP.Radius
 		public void SetAttribute(RadiusAttribute attribute)
 		{
 			_Attributes.Add(attribute);
-
+			_Length += attribute.Length;
 			//Make an array with a size of the current RawData plus the new attribute
-			byte[] newRawData = new byte[RawData.Length + attribute.Length];
+			//byte[] newRawData = new byte[RawData.Length + attribute.Length];
 
 			//Copy the current RawData into the temp array
-			Array.Copy(RawData, 0, newRawData, 0, RawData.Length);
+			//Array.Copy(RawData, 0, newRawData, 0, RawData.Length);
 
 			//Copy the new attribute into the temp array
-			Array.Copy(attribute.RawData, 0, newRawData, RawData.Length, attribute.Length);
+			//Array.Copy(attribute.RawData, 0, newRawData, RawData.Length, attribute.Length);
 
-			RawData = newRawData;
+			//RawData = newRawData;
 
 			//Update the length of the RadiusPacket
-			_Length = (ushort)RawData.Length;
-			Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
-			Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+			//_Length = (ushort)RawData.Length;
+			//Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
+			//Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
 		}
 
 		/// <summary>
