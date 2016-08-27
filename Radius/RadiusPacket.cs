@@ -225,6 +225,8 @@ namespace FP.Radius
 			Array.Copy(hash, 0, newRawData, newRawData.Length - RADIUS_MESSAGE_AUTH_HASH_LENGTH, hash.Length);
 			// Set the final result as the new RawData
 			RawData = newRawData;
+			// Update the Length to include the Message-Authenticator attribute
+			_Length += RADIUS_MESSAGE_AUTHENTICATOR_LENGTH;
 		}
 
 		private void ParseAttributes(byte[] attributeByteArray)
