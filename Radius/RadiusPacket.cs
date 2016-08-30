@@ -61,12 +61,6 @@ namespace FP.Radius
 			PacketType = packetType;
 			Identifier = (Guid.NewGuid().ToByteArray())[0];
 			_Length = RADIUS_HEADER_LENGTH;
-
-			//RawData = new byte[RADIUS_HEADER_LENGTH];
-			//RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
-			//RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
-			//Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
-			//Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
 		}
 
 		public RadiusPacket(RadiusCode packetType, byte identifier)
@@ -74,12 +68,6 @@ namespace FP.Radius
 			PacketType = packetType;
 			Identifier = identifier;
 			_Length = RADIUS_HEADER_LENGTH;
-
-			//RawData = new byte[RADIUS_HEADER_LENGTH];
-			//RawData[RADIUS_CODE_INDEX] = (byte)PacketType;
-			//RawData[RADIUS_IDENTIFIER_INDEX] = Identifier;
-			//Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
-			//Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
 		}
 
 		public void Encode()
@@ -95,8 +83,10 @@ namespace FP.Radius
 			int offset = ATTRIBUTES_INDEX;
 			for (int i = 0; i < _Attributes.Count; i++)
 			{
-				Array.Copy(_Attributes[i].RawData, 0, RawData, offset, _Attributes[i].RawData.Length);
-				offset += _Attributes[i].RawData.Length;
+				RawData[offset++] = (byte)_Attributes[i].Type;
+				RawData[offset++] = _Attributes[i].Length;
+				Array.Copy(_Attributes[i].Data, 0, RawData, offset, _Attributes[i].Data.Length);
+				offset += _Attributes[i].Data.Length;
 			}
 		}
 
@@ -201,21 +191,6 @@ namespace FP.Radius
 		{
 			_Attributes.Add(attribute);
 			_Length += attribute.Length;
-			//Make an array with a size of the current RawData plus the new attribute
-			//byte[] newRawData = new byte[RawData.Length + attribute.Length];
-
-			//Copy the current RawData into the temp array
-			//Array.Copy(RawData, 0, newRawData, 0, RawData.Length);
-
-			//Copy the new attribute into the temp array
-			//Array.Copy(attribute.RawData, 0, newRawData, RawData.Length, attribute.Length);
-
-			//RawData = newRawData;
-
-			//Update the length of the RadiusPacket
-			//_Length = (ushort)RawData.Length;
-			//Array.Copy(BitConverter.GetBytes(_Length), 0, RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
-			//Array.Reverse(RawData, RADIUS_LENGTH_INDEX, sizeof(ushort));
 		}
 
 		/// <summary>

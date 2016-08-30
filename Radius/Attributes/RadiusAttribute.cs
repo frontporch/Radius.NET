@@ -82,12 +82,6 @@ namespace FP.Radius
 			Data = data;
 
 			Length = (byte)(Data.Length + ATTRIBUTE_HEADER_SIZE);
-
-			RawData = new byte[Length];
-
-			RawData[0] = (byte)Type;
-			RawData[1] = Length;
-			Array.Copy(data, 0, RawData, ATTRIBUTE_HEADER_SIZE, data.Length);
 		}
 
 		public static RadiusAttribute CreateInt16(RadiusAttributeType type, short data)
