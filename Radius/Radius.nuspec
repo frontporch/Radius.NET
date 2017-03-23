@@ -11,9 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>
-      Added Server-Status support
-      Added a Ping() method to the RadiusClient to allow easy sending of Server-Status packets
-      ** Potentially Incompatible Change ** No longer call VerifyAuthenticator inside of SendAndReceivePacket which results in packets being returned that should fail authentication.  Callers should do this instead once the response packet has been received from the RADIUS server.
+      Added support for TUNNEL_CLIENT_ENDPOINT AVP as an enum value
     </releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>Radius .NET</tags>
