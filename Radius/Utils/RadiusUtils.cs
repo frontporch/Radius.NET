@@ -64,10 +64,6 @@ namespace FP.Radius
 				MD5 md5 = new MD5CryptoServiceProvider();
 
 				md5.TransformBlock(sharedSecretBytes, 0, sharedSecretBytes.Length, sharedSecretBytes, 0);
-				if (chunk == 0)
-					md5.TransformFinalBlock(requestAuthenticator, 0, requestAuthenticator.Length);
-				else
-					md5.TransformFinalBlock(encryptedPass, (chunk - 1)*16, 16);
 
 				byte[] hash = md5.Hash;
 
