@@ -1,6 +1,5 @@
 using System;
 using System.Security.Cryptography;
-using System.Runtime.InteropServices;
 
 namespace FP.Radius
 {
@@ -65,6 +64,10 @@ namespace FP.Radius
 				MD5 md5 = new MD5CryptoServiceProvider();
 
 				md5.TransformBlock(sharedSecretBytes, 0, sharedSecretBytes.Length, sharedSecretBytes, 0);
+				if (chunk == 0)
+					md5.TransformFinalBlock(requestAuthenticator, 0, requestAuthenticator.Length);
+				else
+					md5.TransformFinalBlock(encryptedPass, (chunk - 1)*16, 16);
 
 				byte[] hash = md5.Hash;
 
@@ -106,17 +109,82 @@ namespace FP.Radius
 			| bytes[offset]);
 		}
 
-		public static byte[] GetNetworkBytes(dynamic value)
+		public static byte[] GetNetworkBytes(short value)
 		{
-			int sizeOf = Marshal.SizeOf(value);
-			byte[] result = new byte[sizeOf];
+			int sizeOf = sizeof(short);
+			byte[] shortArray = new byte[sizeOf];
 			for (int i = 0; i < sizeOf; i++)
 			{
-				result[-i + sizeOf - 1] = (byte)(value & 0xFF);
+				shortArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
+				value = (short)(value >> 8);
+			}
+
+			return shortArray;
+		}
+
+		public static byte[] GetNetworkBytes(ushort value)
+		{
+			int sizeOf = sizeof(ushort);
+			byte[] ushortArray = new byte[sizeOf];
+			for (int i = 0; i < sizeOf; i++)
+			{
+				ushortArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
+				value = (ushort)(value >> 8);
+			}
+
+			return ushortArray;
+		}
+		
+		public static byte[] GetNetworkBytes(int value)
+		{
+			int sizeOf = sizeof(int);
+			byte[] intArray = new byte[sizeOf];
+			for (int i = 0; i < sizeOf; i++)
+			{
+				intArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
+				value = value >> 8;
+			}
+			
+			return intArray;
+		}
+
+		public static byte[] GetNetworkBytes(uint value)
+		{
+			int sizeOf = sizeof(uint);
+			byte[] uintArray = new byte[sizeOf];
+			for (int i = 0; i < sizeOf; i++)
+			{
+				uintArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
+				value = value >> 8;
+			}
+			
+			return uintArray;
+		}
+
+		public static byte[] GetNetworkBytes(long value)
+		{
+			int sizeOf = sizeof(long);
+			byte[] longArray = new byte[sizeOf];
+			for (int i = 0; i < sizeOf; i++)
+			{
+				longArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
 				value = value >> 8;
 			}
 
-			return result;
+			return longArray;
+		}
+
+		public static byte[] GetNetworkBytes(ulong value)
+		{
+			int sizeOf = sizeof(ulong);
+			byte[] ulongArray = new byte[sizeOf];
+			for (int i = 0; i < sizeOf; i++)
+			{
+				ulongArray[(i * -1) + sizeOf - 1] = (byte)(value & 0xFF);
+				value = value >> 8;
+			}
+			
+			return ulongArray;
 		}
 	}
 }
