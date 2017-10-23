@@ -66,43 +66,43 @@ namespace FP.Radius
 
 		public async Task<RadiusPacket> SendAndReceivePacket(RadiusPacket packet, int retries = DEFAULT_RETRIES)
 		{
-			using (UdpClient udpClient = new UdpClient())
+			IPAddress hostIP = null;
+
+			try
+			{
+				if (!IPAddress.TryParse(_HostName, out hostIP))
+				{
+					//Try performing a DNS lookup
+					var host = Dns.GetHostEntry(_HostName);
+					hostIP = host.AddressList.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork || a.AddressFamily == AddressFamily.InterNetworkV6);
+					if (hostIP == null)
+						throw new Exception("Resolving " + _HostName + " returned no hits in DNS");
+
+				}
+			}
+			catch (SocketException e)
+			{
+				int hr = Marshal.GetHRForException(e);
+				string hexValue = hr.ToString("X");
+
+				//The requested name is valid, but no data of the requested type was found
+				if (hexValue == "80004005")
+					return null;
+			}
+
+			var endPoint = new IPEndPoint(hostIP, (int)_AuthPort);
+			int numberOfAttempts = 0;
+
+			using (UdpClient udpClient = new UdpClient(hostIP.AddressFamily))
 			{
 				udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, _SocketTimeout);
 
-				IPAddress hostIP = null;
-
-				try
-				{
-					// Starting with Vista, we are able to bind to a local endpoint to guarantee the packet
-					// will be sent out a particular interface
-					// This is explained in the following blog
-					// http://blogs.technet.com/b/networking/archive/2009/04/25/source-ip-address-selection-on-a-multi-homed-windows-computer.aspx
-					if (_LocalEndPoint != null)
-						udpClient.Client.Bind(_LocalEndPoint);
-
-					if (!IPAddress.TryParse(_HostName, out hostIP))
-					{
-						//Try performing a DNS lookup
-						var host = Dns.GetHostEntry(_HostName);
-						hostIP = host.AddressList.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork);
-						if (hostIP == null)
-							throw new Exception("Resolving " + _HostName + " returned no hits in DNS");
-
-					}
-				}
-				catch (SocketException e)
-				{
-					int hr = Marshal.GetHRForException(e);
-					string hexValue = hr.ToString("X");
-
-					//The requested name is valid, but no data of the requested type was found
-					if (hexValue == "80004005")
-						return null;
-				}
-
-				var endPoint = new IPEndPoint(hostIP, (int)_AuthPort);
-				int numberOfAttempts = 0;
+				// Starting with Vista, we are able to bind to a local endpoint to guarantee the packet
+				// will be sent out a particular interface
+				// This is explained in the following blog
+				// http://blogs.technet.com/b/networking/archive/2009/04/25/source-ip-address-selection-on-a-multi-homed-windows-computer.aspx
+				if (_LocalEndPoint != null)
+					udpClient.Client.Bind(_LocalEndPoint);
 
 				do
 				{
