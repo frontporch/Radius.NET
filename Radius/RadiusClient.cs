@@ -15,6 +15,7 @@ namespace FP.Radius
 		private const int DEFAULT_RETRIES = 3;
 		private const uint DEFAULT_AUTH_PORT = 1812;
 		private const uint DEFAULT_ACCT_PORT = 1813;
+		private const int DEFAULT_UNSOLICITED_PORT = 3799;
 		private const int DEFAULT_SOCKET_TIMEOUT = 3000;
 		#endregion
 
@@ -23,6 +24,7 @@ namespace FP.Radius
 		private string _HostName = String.Empty;
 		private uint _AuthPort = DEFAULT_AUTH_PORT;
 		private uint _AcctPort = DEFAULT_ACCT_PORT;
+		private int _UnsolicitedPort = DEFAULT_UNSOLICITED_PORT;
 		private uint _AuthRetries = DEFAULT_RETRIES;
 		private uint _AcctRetries = DEFAULT_RETRIES;
 		private int _SocketTimeout = DEFAULT_SOCKET_TIMEOUT;
@@ -42,11 +44,13 @@ namespace FP.Radius
 							int sockTimeout = DEFAULT_SOCKET_TIMEOUT,
 							uint authPort = DEFAULT_AUTH_PORT,
 							uint acctPort = DEFAULT_ACCT_PORT,
+							int unsoPort = DEFAULT_UNSOLICITED_PORT,
 							IPEndPoint localEndPoint = null)
 		{
 			_HostName = hostName;
 			_AuthPort = authPort;
 			_AcctPort = acctPort;
+			_UnsolicitedPort = unsoPort;
 			_LocalEndPoint = localEndPoint;
 			_SharedSecret = sharedSecret;
 			_SocketTimeout = sockTimeout;
@@ -61,6 +65,17 @@ namespace FP.Radius
 			byte[] encryptedPass = Utils.EncodePapPassword(Encoding.ASCII.GetBytes(password), packet.Authenticator, _SharedSecret);
 			packet.SetAttribute(new RadiusAttribute(RadiusAttributeType.USER_NAME, Encoding.ASCII.GetBytes(username)));
 			packet.SetAttribute(new RadiusAttribute(RadiusAttributeType.USER_PASSWORD, encryptedPass));
+			return packet;
+		}
+
+		public RadiusPacket DisconnectRequest(string sessionId, string username, string framedIpAddress)
+		{
+			var packet = new RadiusPacket(RadiusCode.DISCONNECT_REQUEST);
+			packet.SetAttribute(RadiusAttribute.CreateString(RadiusAttributeType.ACCT_SESSION_ID, sessionId));
+			packet.SetAttribute(RadiusAttribute.CreateString(RadiusAttributeType.USER_NAME, username));
+			packet.SetAttribute(RadiusAttribute.CreateAddress(RadiusAttributeType.FRAMED_IP_ADDRESS, framedIpAddress));
+			packet.SetAuthenticator(_SharedSecret);
+
 			return packet;
 		}
 
@@ -125,6 +140,42 @@ namespace FP.Radius
 					numberOfAttempts++;
 
 				} while (numberOfAttempts < retries);
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Send unsolicited packets commonly used for Disconnect and Change-of-Authorization messages.<br></br>
+		/// https://www.ietf.org/rfc/rfc3576.txt
+		/// </summary>
+		/// <param name="packet"></param>
+		/// <param name="retries"></param>
+		/// <returns></returns>
+		public async Task<RadiusPacket> SendUnsolicitedPacketAsync(RadiusPacket packet)
+		{
+			using (var udpClient = new UdpClient())
+			{
+				try
+				{
+					udpClient.Connect(_HostName, _UnsolicitedPort);
+
+					await udpClient.SendAsync(packet.RawData, packet.RawData.Length);
+
+					var RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
+
+					var result = await udpClient.ReceiveAsync();
+
+					var receivedPacket = new RadiusPacket(result.Buffer);
+
+					if (receivedPacket.Valid)
+						return receivedPacket;
+				}
+				catch (Exception)
+				{
+
+					throw;
+				}
 			}
 
 			return null;

@@ -120,6 +120,14 @@ namespace FP.Radius
 			return new RadiusAttribute(type, Utils.GetNetworkBytes(data));
 		}
 
+		public static RadiusAttribute CreateAddress(RadiusAttributeType type, string ipString)
+		{
+			if (IPAddress.TryParse(ipString, out IPAddress address))
+				return new RadiusAttribute(type, address.GetAddressBytes());
+
+			throw new ArgumentException($"IPString '{ipString} is not a valid IPAddres.'");
+		}
+
 		/// <summary>
 		/// Creates a RADIUS attribute that has a string value type
 		/// </summary>
