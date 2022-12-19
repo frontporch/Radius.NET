@@ -12,7 +12,7 @@ namespace FP.Radius
 
 			Array.Copy(data, 0, sum, 0, data.Length);
 			Array.Copy(sharedS, 0, sum, data.Length, sharedS.Length);
-			Array.Clear(data, 4, 16);
+			Array.Clear(sum, 4, 16);
 			MD5 md5 = new MD5CryptoServiceProvider();
 			md5.ComputeHash(sum, 0, sum.Length);
 			return md5.Hash;
